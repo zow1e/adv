@@ -23,27 +23,32 @@ class LineChart {
       vis.g = vis.svg.append("g")
         .attr("transform", `translate(${vis.MARGIN.LEFT}, ${vis.MARGIN.TOP})`)
   
-      vis.color = d3.scaleOrdinal(d3.schemePastel1)
-  
-      vis.x = d3.scaleTime().range([0, vis.WIDTH])
-      vis.y = d3.scaleLinear().range([vis.HEIGHT, 0])
-  
+      // line chart
+      vis.x = d3.scaleTime()
+      .rangeRound([0, WIDTH])
+
+      vis.y = d3.scaleLinear()
+        .range([HEIGHT, 0])
+
+
       vis.yAxisCall = d3.axisLeft()
       vis.xAxisCall = d3.axisBottom()
         .ticks(4)
-      vis.xAxis = vis.g.append("g")
+        
+      vis.xAxisGroup = vis.g.append("g")
         .attr("class", "x axis")
-        .attr("transform", `translate(0, ${vis.HEIGHT})`)
-      vis.yAxis = vis.g.append("g")
+        .attr("transform", `translate(0, ${HEIGHT})`)
+      
+        vis.yAxisGroup = vis.g.append("g")
         .attr("class", "y axis")
   
-      vis.stack = d3.stack()
-        .keys(["west", "south", "northeast", "midwest"])
+      // vis.stack = d3.stack()
+      //   .keys(["west", "south", "northeast", "midwest"])
   
-      vis.area = d3.area()
-        .x(d => vis.x(parseTime(d.data.date)))
-        .y0(d => vis.y(d[0]))
-        .y1(d => vis.y(d[1]))
+      // vis.area = d3.area()
+      //   .x(d => vis.x(parseTime(d.data.date)))
+      //   .y0(d => vis.y(d[0]))
+      //   .y1(d => vis.y(d[1]))
   
       vis.addLegend()
   
@@ -55,23 +60,23 @@ class LineChart {
       const vis = this
   
       vis.variable = $("#var-select").val()
-      vis.dayNest = d3.nest()
-        .key(d => formatTime(d.date))
-        .entries(calls)
+      // vis.dayNest = d3.nest()
+      //   .key(d => formatTime(d.date))
+      //   .entries(calls)
   
-      vis.dataFiltered = vis.dayNest
-        .map(day => day.values.reduce(
-          (accumulator, current) => {
-              accumulator.date = day.key
-              accumulator[current.team] = accumulator[current.team] + current[vis.variable]
-              return accumulator
-          }, {
-            "northeast": 0,
-            "midwest": 0,
-            "south": 0,
-            "west": 0
-          }
-        ))
+      // vis.dataFiltered = vis.dayNest
+      //   .map(day => day.values.reduce(
+      //     (accumulator, current) => {
+      //         accumulator.date = day.key
+      //         accumulator[current.team] = accumulator[current.team] + current[vis.variable]
+      //         return accumulator
+      //     }, {
+      //       "northeast": 0,
+      //       "midwest": 0,
+      //       "south": 0,
+      //       "west": 0
+      //     }
+      //   ))
   
       vis.updateVis()
     }
@@ -81,10 +86,10 @@ class LineChart {
   
       vis.t = d3.transition().duration(750)
   
-      vis.maxDateVal = d3.max(vis.dataFiltered, d => {
-        var vals = d3.keys(d).map(key => key !== 'date' ? d[key] : 0)
-        return d3.sum(vals)
-      })
+      // vis.maxDateVal = d3.max(vis.dataFiltered, d => {
+      //   var vals = d3.keys(d).map(key => key !== 'date' ? d[key] : 0)
+      //   return d3.sum(vals)
+      // })
   
       // update scales
       vis.x.domain(d3.extent(vis.dataFiltered, (d) => parseTime(d.date)))

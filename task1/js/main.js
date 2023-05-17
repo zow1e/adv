@@ -8,18 +8,20 @@ const formatTime = d3.timeFormat("%d/%m/%Y")
 // const formatYr = d3.timeFormat("%Y")
 // const formatMonth = d3.timeFormat("%m")
 
-const MARGIN = { LEFT: 100, RIGHT: 10, TOP: 10, BOTTOM: 100 }
-const WIDTH = 600 - MARGIN.LEFT - MARGIN.RIGHT
-const HEIGHT = 400 - MARGIN.TOP - MARGIN.BOTTOM
+// const MARGIN = { LEFT: 100, RIGHT: 10, TOP: 10, BOTTOM: 100 }
+// const WIDTH = 600 - MARGIN.LEFT - MARGIN.RIGHT
+// const HEIGHT = 400 - MARGIN.TOP - MARGIN.BOTTOM
 
 let flag = true
 
-const svg = d3.select("#line-chart").append("svg")
-  .attr("width", WIDTH + MARGIN.LEFT + MARGIN.RIGHT)
-  .attr("height", HEIGHT + MARGIN.TOP + MARGIN.BOTTOM)
+let linechart
 
-const g = svg.append("g")
-  .attr("transform", `translate(${MARGIN.LEFT}, ${MARGIN.TOP})`)
+// const svg = d3.select("#line-chart").append("svg")
+//   .attr("width", WIDTH + MARGIN.LEFT + MARGIN.RIGHT)
+//   .attr("height", HEIGHT + MARGIN.TOP + MARGIN.BOTTOM)
+
+// const g = svg.append("g")
+//   .attr("transform", `translate(${MARGIN.LEFT}, ${MARGIN.TOP})`)
 
 // X label
 g.append("text")
@@ -44,22 +46,17 @@ const yLabel = g.append("text")
 //   .paddingInner(0.3)
 //   .paddingOuter(0.2)
 
-// line chart
-const x = d3.scaleTime()
-.range([0, WIDTH])
 
-const y = d3.scaleLinear()
-  .range([HEIGHT, 0])
 
-const xAxisGroup = g.append("g")
-  .attr("class", "x axis")
-  .attr("transform", `translate(0, ${HEIGHT})`)
+// const xAxisGroup = g.append("g")
+//   .attr("class", "x axis")
+//   .attr("transform", `translate(0, ${HEIGHT})`)
 
-const yAxisGroup = g.append("g")
-  .attr("class", "y axis")
+// const yAxisGroup = g.append("g")
+//   .attr("class", "y axis")
 
-// d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
-  d3.csv("data/small.csv").then(data => {
+d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
+  // d3.csv("data/small.csv").then(data => {
 
     allyears = []
     allmonths = []
@@ -93,8 +90,6 @@ const yAxisGroup = g.append("g")
   yrs = [...new Set(allyears)]
   months = [...new Set(allmonths)]
 
-  console.log(yrs)
-
   // dates (year/month), measure (resale_price / floor_area_sqm etc)
   function avg(data, dates, timecol, measurecol) {
     measureavg = []
@@ -122,7 +117,7 @@ avgobject = {}
 avgobject.year = yrs
 avgobject.price = resalepriceavg
 
-  
+  linechart = new LineChart('#line-chart')
 
   d3.interval(() => {
     // flag = !flag
@@ -141,16 +136,20 @@ function update(data) {
   const t = d3.transition().duration(750) 
 
   x.domain(d3.extent(yrs))
+  console.log(yrs)
   y.domain([d3.min(resalepriceavg), 
             d3.max(resalepriceavg)])
   
   const xAxisCall = d3.axisBottom(x)
+  .tickValues(yrs)
+  .tickFormat((y, i) => yrs[i])
   xAxisGroup.transition(t).call(xAxisCall)  
     .selectAll("text")
       .attr("y", "10")
       .attr("x", "-5")
       .attr("text-anchor", "end")
       .attr("transform", "rotate(-40)")
+      
 
   const yAxisCall = d3.axisLeft(y)
     .ticks(3)
@@ -196,6 +195,6 @@ function update(data) {
   // .attr("d", line(yrs))
   .attr("d", line)
 
-  const text = flag ? "Revenue ($)" : "Profit ($)"
+  const text = flag ? "Avg Revenue ($)" : "Profit ($)"
   yLabel.text(text)
 }

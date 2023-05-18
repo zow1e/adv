@@ -1,12 +1,9 @@
 /*
 *    line chart
 */
-// import { yrs , months, resalepriceavg} from main.js
+
 
 function createlinechart(xaxis, yaxis,) {
-
-  // console.log(xaxis)
-  // console.log(yaxis)
 
 console.log('linechart printing')
 
@@ -66,14 +63,12 @@ const svg = d3.select('#line-chart').append("svg")
   
       updateline(xaxis, yaxis)
 
-      // return [x, y]
 }
   
   
     function updateline(xaxis, yaxis) {
 
-      // line chart
-      
+
       // const dayNest = d3.nest()
       //   .key(d => formatTime(d.date))
       //   .entries(calls)
@@ -125,32 +120,7 @@ const svg = d3.select('#line-chart').append("svg")
         .ticks(3)
         .tickFormat(d => "$"+d)
         yAxisGroup.transition(t).call(yAxisCall) 
-    
-      // // JOIN new data with old elements.
-      // const rects = g.selectAll("line")
-      //   // .data(data, d => d.year)
-      //   .data(yrs) 
-    
-      // // EXIT old elements not present in new data.
-      // rects.exit()
-      //   .attr("fill", "red")
-      //   .transition(t)
-      //     .attr("cy", y(0))
-      //     .remove()
-    
-      // // ENTER new elements present in new data...
-      // rects.enter().append("circle")
-      //   .attr("fill", "grey")
-      //   .attr("cy", y(0))
-      //   .attr("r", 5)
-      //   // AND UPDATE old elements present in new data.
-      //   .merge(rects)
-      //   .transition(t)
-      //     .attr("cx", (d) => x(d) + (x.bandwidth() / 2))
-      //     .attr("cy", (d, i) => y(resalepriceavg[i]))
-    
-    
-      console.log('draw line')
+
       // draw line
       const line = d3.line()
       .x(d => x(d))
@@ -164,28 +134,6 @@ const svg = d3.select('#line-chart').append("svg")
       .attr("stroke-width", "3px")
       .attr("d", line(xaxis))
 
-      // //remove
-      // linesss.exit().remove()
-
-      // //update
-      // linesss
-      // .attr("class", "line")
-      // .attr("fill", "none")
-      // .attr("stroke", "blue")
-      // .attr("stroke-width", "3px")
-      // // .attr("d", line(yrs))
-      // .attr("d", line)
-    
-      // // add line to chart
-      // linesss.append("path")
-      // .transition(t)
-      // // .datum(xaxis)
-      // .attr("class", "line")
-      // .attr("fill", "none")
-      // .attr("stroke", "blue")
-      // .attr("stroke-width", "3px")
-      // // .attr("d", line(yrs))
-      // .attr("d", line)
     
       const flagtxt = flag ? "Avg Revenue ($)" : "Profit ($)"
      Ylabel.text(flagtxt)

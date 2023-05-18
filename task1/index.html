@@ -26,8 +26,8 @@
 			<!-- charts on left side -->
 			<div id="left-charts" class="col-sm-12 col-md-8">
 				<div class="row">
-					<div class="col-md-6">
-						<label>Dates: <span id="dateLabel1">01/01/2017</span> - <span id="dateLabel2">10/12/2017</span></label>
+					<div class="col-md-7">
+						<label>Dates: <span id="dateLabel1"></span> - <span id="dateLabel2"></span></label>
 					</div>
 				</div>
 				<div class="row">
@@ -36,6 +36,13 @@
 							<option selected value="resale_price">Resale Price (USD)</option>
 							<option value="call_duration">Call Time (seconds)</option>
 							<option value="units_sold">Units Sold</option>
+						</select>
+					</div>  
+					<div class="col-md-4">
+						<select id="var-time-select" class="form-control">
+							<option selected value="year">Years</option>
+							<option value="month">Months</option>
+							<option value="alldates">All Dates</option>
 						</select>
 					</div>                          
 				</div>
@@ -65,7 +72,6 @@
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="crossorigin="anonymous"></script>
 
 	<!-- Custom JS -->
-	<!-- <script src="js/main.js"></script> -->
 	
 	<script src="js/lineline.js"></script>
 

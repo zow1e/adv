@@ -14,77 +14,77 @@ class Timeline {
 	initVis() {
     const vis = this
 
-		vis.MARGIN = { LEFT: 80, RIGHT: 100, TOP: 0, BOTTOM: 30 }
-		vis.WIDTH = 800 - vis.MARGIN.LEFT - vis.MARGIN.RIGHT
-		vis.HEIGHT = 130 - vis.MARGIN.TOP - vis.MARGIN.BOTTOM
+		const MARGIN = { LEFT: 80, RIGHT: 100, TOP: 0, BOTTOM: 30 }
+		const WIDTH = 800 - const MARGIN.LEFT - const MARGIN.RIGHT
+		const HEIGHT = 130 - const MARGIN.TOP - const MARGIN.BOTTOM
 		
-		vis.svg = d3.select(vis.parentElement).append("svg")
-			.attr("width", vis.WIDTH + vis.MARGIN.LEFT + vis.MARGIN.RIGHT)
-			.attr("height", vis.HEIGHT + vis.MARGIN.TOP + vis.MARGIN.BOTTOM)
+		const svg = d3.select(const parentElement).append("svg")
+			.attr("width", const WIDTH + const MARGIN.LEFT + const MARGIN.RIGHT)
+			.attr("height", const HEIGHT + const MARGIN.TOP + const MARGIN.BOTTOM)
 		
-		vis.g = vis.svg.append("g")
-			.attr("transform", `translate(${vis.MARGIN.LEFT}, ${vis.MARGIN.TOP})`)
+		const g = const svg.append("g")
+			.attr("transform", `translate(${const MARGIN.LEFT}, ${const MARGIN.TOP})`)
 		
 		// scales
-		vis.x = d3.scaleTime().range([0, vis.WIDTH])
-		vis.y = d3.scaleLinear().range([vis.HEIGHT, 0])
+		const x = d3.scaleTime().range([0, const WIDTH])
+		const y = d3.scaleLinear().range([const HEIGHT, 0])
 		
 		// x-axis
-		vis.xAxisCall = d3.axisBottom()
+		const xAxisCall = d3.axisBottom()
 			.ticks(4)
-		vis.xAxis = vis.g.append("g")
+		const xAxis = const g.append("g")
 			.attr("class", "x axis")
-			.attr("transform", `translate(0, ${vis.HEIGHT})`)
+			.attr("transform", `translate(0, ${const HEIGHT})`)
         
-    vis.areaPath = vis.g.append("path")
+    const areaPath = const g.append("path")
 			.attr("fill", "#ccc")
 		
 		// initialize brush component
-		vis.brush = d3.brushX()
+		const brush = d3.brushX()
       .handleSize(10)
-			.extent([[0, 0], [vis.WIDTH, vis.HEIGHT]])
+			.extent([[0, 0], [const WIDTH, const HEIGHT]])
 			.on("brush", brushed)
 
 		// append brush component
-		vis.brushComponent = vis.g.append("g")
+		const brushComponent = const g.append("g")
 			.attr("class", "brush")
-			.call(vis.brush)
+			.call(const brush)
 
-		vis.wrangleData()
+		const wrangleData()
 	}
 
 	wrangleData() {
 		const vis = this
 
-    vis.coin = $("#coin-select").val()
-    vis.yValue = $("#var-select").val()
-    vis.data = filteredData[vis.coin]
+    const coin = $("#coin-select").val()
+    const yValue = $("#var-select").val()
+    const data = filteredData[const coin]
 
-		vis.updateVis()
+		const updateVis()
 	}
 
 	updateVis() {
     const vis = this
 
-		vis.t = d3.transition().duration(1000)
+		const t = d3.transition().duration(1000)
 
     // update scales
-		vis.x.domain(d3.extent(vis.data, d => d.date))
-		vis.y.domain([0, d3.max(vis.data, d => d[vis.yValue]) * 1.005])
+		const x.domain(d3.extent(const data, d => d.date))
+		const y.domain([0, d3.max(const data, d => d[const yValue]) * 1.005])
 	
 		// update axes
-		vis.xAxisCall.scale(vis.x)
-		vis.xAxis.transition(vis.t).call(vis.xAxisCall)
+		const xAxisCall.scale(const x)
+		const xAxis.transition(const t).call(const xAxisCall)
   
     // area path generator
-    vis.area = d3.area()
-      .x(d => vis.x(d.date))
-      .y0(vis.HEIGHT)
-      .y1(d => vis.y(d[vis.yValue]))
+    const area = d3.area()
+      .x(d => const x(d.date))
+      .y0(const HEIGHT)
+      .y1(d => const y(d[const yValue]))
 
-    vis.areaPath
-      .data([vis.data])
-      .attr("d", vis.area)
+    const areaPath
+      .data([const data])
+      .attr("d", const area)
 	}
 }
 

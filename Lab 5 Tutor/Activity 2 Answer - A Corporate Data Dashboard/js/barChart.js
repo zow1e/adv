@@ -16,108 +16,108 @@ class BarChart {
   initVis() {
     const vis = this
 
-    vis.MARGIN = { LEFT: 60, RIGHT: 50, TOP: 30, BOTTOM: 30 }
-    vis.WIDTH = 350 - vis.MARGIN.LEFT - vis.MARGIN.RIGHT
-    vis.HEIGHT = 130 - vis.MARGIN.TOP - vis.MARGIN.BOTTOM
+    const MARGIN = { LEFT: 60, RIGHT: 50, TOP: 30, BOTTOM: 30 }
+    const WIDTH = 350 - const MARGIN.LEFT - const MARGIN.RIGHT
+    const HEIGHT = 130 - const MARGIN.TOP - const MARGIN.BOTTOM
 
-    vis.svg = d3.select(vis.parentElement).append("svg")
-      .attr("width", vis.WIDTH + vis.MARGIN.LEFT + vis.MARGIN.RIGHT)
-      .attr("height", vis.HEIGHT + vis.MARGIN.TOP + vis.MARGIN.BOTTOM)
+    const svg = d3.select(const parentElement).append("svg")
+      .attr("width", const WIDTH + const MARGIN.LEFT + const MARGIN.RIGHT)
+      .attr("height", const HEIGHT + const MARGIN.TOP + const MARGIN.BOTTOM)
 
-    vis.g = vis.svg.append("g")
-      .attr("transform", `translate(${vis.MARGIN.LEFT}, ${vis.MARGIN.TOP})`)
+    const g = const svg.append("g")
+      .attr("transform", `translate(${const MARGIN.LEFT}, ${const MARGIN.TOP})`)
 
-    vis.linePath = vis.g.append("path")
+    const linePath = const g.append("path")
       .attr("class", "line")
       .attr("fill", "none")
       .attr("stroke-width", "3px")
 
-    vis.x = d3.scaleBand()
+    const x = d3.scaleBand()
       .domain(["electronics", "furniture", "appliances", "materials"])
-      .range([0, vis.WIDTH])
+      .range([0, const WIDTH])
       .padding(0.5)
 
-    vis.y = d3.scaleLinear().range([vis.HEIGHT, 0])
+    const y = d3.scaleLinear().range([const HEIGHT, 0])
 
     function capitalizeFirstLetter(string) {
       return string.charAt(0).toUpperCase() + string.slice(1)
     }
 
-    vis.yAxisCall = d3.axisLeft()
+    const yAxisCall = d3.axisLeft()
       .ticks(4);
-    vis.xAxisCall = d3.axisBottom()
+    const xAxisCall = d3.axisBottom()
       .tickFormat(d => "" + capitalizeFirstLetter(d))
-    vis.xAxis = vis.g.append("g")
+    const xAxis = const g.append("g")
       .attr("class", "x axis")
-      .attr("transform", `translate(0, ${vis.HEIGHT})`)
-    vis.yAxis = vis.g.append("g")
+      .attr("transform", `translate(0, ${const HEIGHT})`)
+    const yAxis = const g.append("g")
       .attr("class", "y axis")
 
-    vis.g.append("text")
+    const g.append("text")
       .attr("class", "title")
       .attr("y", -15)
       .attr("x", -50)
       .attr("font-size", "12px")
       .attr("text-anchor", "start")
-      .text(vis.title)
+      .text(const title)
 
-    vis.wrangleData()
+    const wrangleData()
   }
 
 
   wrangleData() {
     const vis = this
 
-    vis.dataFiltered = nestedCalls.map(category => {
+    const dataFiltered = nestedCalls.map(category => {
       return {
         category: category.key,
         size: (category.values.reduce((accumulator, current) => 
-          accumulator + current[vis.variable], 0) / category.values.length)
+          accumulator + current[const variable], 0) / category.values.length)
       }
     })
 
-    vis.updateVis()
+    const updateVis()
   }
 
   updateVis() {
     const vis = this
 
-    vis.t = d3.transition().duration(1000)
+    const t = d3.transition().duration(1000)
 
     // update scales
-    vis.y.domain([0, d3.max(vis.dataFiltered, d => Number(d.size))])
+    const y.domain([0, d3.max(const dataFiltered, d => Number(d.size))])
 
     // update axes
-    vis.xAxisCall.scale(vis.x)
-    vis.xAxis.transition(vis.t).call(vis.xAxisCall)
-    vis.yAxisCall.scale(vis.y)
-    vis.yAxis.transition(vis.t).call(vis.yAxisCall)
+    const xAxisCall.scale(const x)
+    const xAxis.transition(const t).call(const xAxisCall)
+    const yAxisCall.scale(const y)
+    const yAxis.transition(const t).call(const yAxisCall)
 
-    vis.rects = vis.g.selectAll("rect")
-      .data(vis.dataFiltered, d => d.category)
+    const rects = const g.selectAll("rect")
+      .data(const dataFiltered, d => d.category)
 
-    vis.rects.exit()
+    const rects.exit()
       .attr("class", "exit")
-      .transition(vis.t)
+      .transition(const t)
         .attr("height", 0)
-        .attr("y", vis.HEIGHT)
+        .attr("y", const HEIGHT)
         .style("fill-opacity", "0.1")
         .remove()
 
-    vis.rects
+    const rects
       .attr("class", "update")
-      .transition(vis.t)
-        .attr("y", d => vis.y(d.size))
-        .attr("height", d => (vis.HEIGHT - vis.y(d.size)))
-        .attr("x", d => vis.x(d.category))
-        .attr("width", vis.x.bandwidth)
+      .transition(const t)
+        .attr("y", d => const y(d.size))
+        .attr("height", d => (const HEIGHT - const y(d.size)))
+        .attr("x", d => const x(d.category))
+        .attr("width", const x.bandwidth)
 
-    vis.rects.enter().append("rect")
+    const rects.enter().append("rect")
       .attr("class", "enter")
-      .attr("y", d => vis.y(d.size))
-      .attr("height", d => (vis.HEIGHT - vis.y(d.size)))
-      .attr("x", d => vis.x(d.category))
-      .attr("width", vis.x.bandwidth)
+      .attr("y", d => const y(d.size))
+      .attr("height", d => (const HEIGHT - const y(d.size)))
+      .attr("x", d => const x(d.category))
+      .attr("width", const x.bandwidth)
       .attr("fill", "#ccc")
   }
 }

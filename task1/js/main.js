@@ -14,7 +14,7 @@ const formatTime = d3.timeFormat("%d/%m/%Y")
 
 let flag = true
 
-let linechart
+let lineline
 
 // const svg = d3.select("#line-chart").append("svg")
 //   .attr("width", WIDTH + MARGIN.LEFT + MARGIN.RIGHT)
@@ -23,23 +23,23 @@ let linechart
 // const g = svg.append("g")
 //   .attr("transform", `translate(${MARGIN.LEFT}, ${MARGIN.TOP})`)
 
-// X label
-g.append("text")
-  .attr("class", "x axis-label")
-  .attr("x", WIDTH / 2)
-  .attr("y", HEIGHT + 60)
-  .attr("font-size", "20px")
-  .attr("text-anchor", "middle")
-  .text("Month")
+// // X label
+// g.append("text")
+//   .attr("class", "x axis-label")
+//   .attr("x", WIDTH / 2)
+//   .attr("y", HEIGHT + 60)
+//   .attr("font-size", "20px")
+//   .attr("text-anchor", "middle")
+//   .text("Month")
 
-// Y label
-const yLabel = g.append("text")
-  .attr("class", "y axis-label")
-  .attr("x", - (HEIGHT / 2))
-  .attr("y", -60)
-  .attr("font-size", "20px")
-  .attr("text-anchor", "middle")
-  .attr("transform", "rotate(-90)")
+// // Y label
+// const yLabel = g.append("text")
+//   .attr("class", "y axis-label")
+//   .attr("x", - (HEIGHT / 2))
+//   .attr("y", -60)
+//   .attr("font-size", "20px")
+//   .attr("text-anchor", "middle")
+//   .attr("transform", "rotate(-90)")
 
 // const x = d3.scaleBand()
 //   .range([0, WIDTH])
@@ -58,8 +58,8 @@ const yLabel = g.append("text")
 d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
   // d3.csv("data/small.csv").then(data => {
 
-    allyears = []
-    allmonths = []
+    var allyears = []
+    var allmonths = []
     
 
   data.forEach(d => {
@@ -86,9 +86,10 @@ d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
 
   })
 
+  // lineline = new LINECHART('#line-chart')
 
-  yrs = [...new Set(allyears)]
-  months = [...new Set(allmonths)]
+
+  
 
   // dates (year/month), measure (resale_price / floor_area_sqm etc)
   function avg(data, dates, timecol, measurecol) {
@@ -109,15 +110,35 @@ d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
 
     }
     return measureavg
+  
 }
 
-resalepriceavg = avg(data, yrs, 'year', 'resale_price')
+const yrs = [...new Set(allyears)]
+const months = [...new Set(allmonths)]
+
+const resalepriceavg = avg(data, yrs, 'year', 'resale_price')
+
+
+
+// global.yrs = [...new Set(allyears)]
+// global.months = [...new Set(allmonths)]
+
+// global.resalepriceavg = avg(data, yrs, 'year', 'resale_price')
+
+
+// var yrs = [...new Set(allyears)]
+// var months = [...new Set(allmonths)]
+
+// var resalepriceavg = avg(data, yrs, 'year', 'resale_price')
 
 avgobject = {}
 avgobject.year = yrs
 avgobject.price = resalepriceavg
 
-  linechart = new LineChart('#line-chart')
+$("#var-select").on("change", () => {
+  stackedArea.wrangleData()
+  timeline.wrangleData()
+})
 
   d3.interval(() => {
     // flag = !flag
@@ -130,71 +151,13 @@ avgobject.price = resalepriceavg
 //   update(data)
 })
 
+// lineline.wrangleData()
+
 
 function update(data) {
-  const value = flag ? "remainingyrs" : "resale_price"
-  const t = d3.transition().duration(750) 
-
-  x.domain(d3.extent(yrs))
-  console.log(yrs)
-  y.domain([d3.min(resalepriceavg), 
-            d3.max(resalepriceavg)])
-  
-  const xAxisCall = d3.axisBottom(x)
-  .tickValues(yrs)
-  .tickFormat((y, i) => yrs[i])
-  xAxisGroup.transition(t).call(xAxisCall)  
-    .selectAll("text")
-      .attr("y", "10")
-      .attr("x", "-5")
-      .attr("text-anchor", "end")
-      .attr("transform", "rotate(-40)")
-      
-
-  const yAxisCall = d3.axisLeft(y)
-    .ticks(3)
-    .tickFormat(d => "$"+d)
-  yAxisGroup.transition(t).call(yAxisCall) 
-
-  // // JOIN new data with old elements.
-  // const rects = g.selectAll("line")
-  //   // .data(data, d => d.year)
-  //   .data(yrs) 
-
-  // // EXIT old elements not present in new data.
-  // rects.exit()
-  //   .attr("fill", "red")
-  //   .transition(t)
-  //     .attr("cy", y(0))
-  //     .remove()
-
-  // // ENTER new elements present in new data...
-  // rects.enter().append("circle")
-  //   .attr("fill", "grey")
-  //   .attr("cy", y(0))
-  //   .attr("r", 5)
-  //   // AND UPDATE old elements present in new data.
-  //   .merge(rects)
-  //   .transition(t)
-  //     .attr("cx", (d) => x(d) + (x.bandwidth() / 2))
-  //     .attr("cy", (d, i) => y(resalepriceavg[i]))
-
-
-  // draw line
-  const line = d3.line()
-  .x(d => x(d))
-  .y((d, i) => y(resalepriceavg[i]))
-
-  // add line to chart
-	g.append("path")
-  .datum(yrs)
-  .attr("class", "line")
-  .attr("fill", "none")
-  .attr("stroke", "grey")
-  .attr("stroke-width", "3px")
-  // .attr("d", line(yrs))
-  .attr("d", line)
-
-  const text = flag ? "Avg Revenue ($)" : "Profit ($)"
-  yLabel.text(text)
+ 
 }
+
+console.log('main done')
+
+export { yrs , months, resalepriceavg};

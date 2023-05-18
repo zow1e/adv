@@ -16,8 +16,8 @@ const g = svg.append("g")
   .attr("transform", `translate(${MARGIN.LEFT}, ${MARGIN.TOP})`)
 
 // time parsers/formatters
-const parseTime = d3.timeParse("%d/%m/%Y")
-const formatTime = d3.timeFormat("%d/%m/%Y")
+// const parsessTime = d3.timeParse("%d/%m/%Y")
+// const formatTime = d3.timeFormat("%d/%m/%Y")
 // for tooltip
 const bisectDate = d3.bisector(d => d.date).left
 

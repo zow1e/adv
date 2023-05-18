@@ -15,77 +15,77 @@ class DonutChart {
 	initVis() {
     const vis = this
 
-		vis.MARGIN = { LEFT: 0, RIGHT: 0, TOP: 40, BOTTOM: 0 }
-		vis.WIDTH = 250 - vis.MARGIN.LEFT - vis.MARGIN.RIGHT
-    vis.HEIGHT = 250 - vis.MARGIN.TOP - vis.MARGIN.BOTTOM
-    vis.RADIUS = Math.min(vis.WIDTH, vis.HEIGHT) / 2
+		const MARGIN = { LEFT: 0, RIGHT: 0, TOP: 40, BOTTOM: 0 }
+		const WIDTH = 250 - const MARGIN.LEFT - const MARGIN.RIGHT
+    const HEIGHT = 250 - const MARGIN.TOP - const MARGIN.BOTTOM
+    const RADIUS = Math.min(const WIDTH, const HEIGHT) / 2
 		
-		vis.svg = d3.select(vis.parentElement).append("svg")
-			.attr("width", vis.WIDTH + vis.MARGIN.LEFT + vis.MARGIN.RIGHT)
-			.attr("height", vis.HEIGHT + vis.MARGIN.TOP + vis.MARGIN.BOTTOM)
+		const svg = d3.select(const parentElement).append("svg")
+			.attr("width", const WIDTH + const MARGIN.LEFT + const MARGIN.RIGHT)
+			.attr("height", const HEIGHT + const MARGIN.TOP + const MARGIN.BOTTOM)
 		
-		vis.g = vis.svg.append("g")
-      .attr("transform", `translate(${vis.MARGIN.LEFT + (vis.WIDTH / 2)},
-        ${vis.MARGIN.TOP + (vis.HEIGHT / 2)})`)
+		const g = const svg.append("g")
+      .attr("transform", `translate(${const MARGIN.LEFT + (const WIDTH / 2)},
+        ${const MARGIN.TOP + (const HEIGHT / 2)})`)
     
-    vis.pie = d3.pie()
+    const pie = d3.pie()
       .padAngle(0.03)
-      .value(d => d.data[vis.variable])
+      .value(d => d.data[const variable])
       .sort(null)
     
-    vis.arc = d3.arc()
-      .innerRadius(vis.RADIUS - 60)
-      .outerRadius(vis.RADIUS - 30)
+    const arc = d3.arc()
+      .innerRadius(const RADIUS - 60)
+      .outerRadius(const RADIUS - 30)
 
-    vis.g.append("text")
-      .attr("y", -(vis.HEIGHT / 2))
-      .attr("x", -(vis.WIDTH / 2))
+    const g.append("text")
+      .attr("y", -(const HEIGHT / 2))
+      .attr("x", -(const WIDTH / 2))
       .attr("font-size", "15px")
       .attr("text-anchor", "start")
-      .text(vis.variable == "market_cap" ? "Market Capitalization" 
+      .text(const variable == "market_cap" ? "Market Capitalization" 
         : "24 Hour Trading Volume")
 
-		vis.wrangleData()
+		const wrangleData()
 	}
 
 	wrangleData() {
 		const vis = this
 
-    vis.activeCoin = $("#coin-select").val()
+    const activeCoin = $("#coin-select").val()
 
-		vis.updateVis()
+		const updateVis()
 	}
 
 	updateVis() {
     const vis = this
 
-    vis.t = d3.transition().duration(750)
-    vis.path = vis.g.selectAll("path")
-    vis.data0 = vis.path.data()
-    vis.data1 = vis.pie(donutData)
+    const t = d3.transition().duration(750)
+    const path = const g.selectAll("path")
+    const data0 = const path.data()
+    const data1 = const pie(donutData)
   
     // JOIN elements with new data.
-    vis.path = vis.path.data(vis.data1, key)
+    const path = const path.data(const data1, key)
   
     // EXIT old elements from the screen.
-    vis.path.exit()
-      .datum((d, i) => findNeighborArc(i, vis.data1, vis.data0, key) || d)
-      .transition(vis.t)
+    const path.exit()
+      .datum((d, i) => findNeighborArc(i, const data1, const data0, key) || d)
+      .transition(const t)
         .attrTween("d", arcTween)
         .remove()
     
     // UPDATE elements still on the screen.
-    vis.path.transition(vis.t)
+    const path.transition(const t)
       .attrTween("d", arcTween)
-      .attr("fill-opacity", (d) => (d.data.coin === vis.activeCoin) ? 1 : 0.3)
+      .attr("fill-opacity", (d) => (d.data.coin === const activeCoin) ? 1 : 0.3)
   
     // ENTER new elements in the array.
-    vis.path.enter().append("path")
-      .each(function(d, i) { this._current = findNeighborArc(i, vis.data0, vis.data1, key) || d }) 
+    const path.enter().append("path")
+      .each(function(d, i) { this._current = findNeighborArc(i, const data0, const data1, key) || d }) 
       .attr("fill", d => color(d.data.coin))
-      .attr("fill-opacity", (d) => (d.data.coin === vis.activeCoin) ? 1 : 0.3)
+      .attr("fill-opacity", (d) => (d.data.coin === const activeCoin) ? 1 : 0.3)
       .on("click", arcClicked)
-      .transition(vis.t)
+      .transition(const t)
         .attrTween("d", arcTween)
   
     function key(d) {
@@ -123,7 +123,7 @@ class DonutChart {
     function arcTween(d) {
       const i = d3.interpolate(this._current, d)
       this._current = i(1)
-      return (t) => vis.arc(i(t))
+      return (t) => const arc(i(t))
     }
 	}
 }

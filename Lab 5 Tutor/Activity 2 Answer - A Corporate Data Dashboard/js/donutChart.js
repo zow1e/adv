@@ -15,39 +15,39 @@ class DonutChart {
 	initVis() {
     const vis = this
 
-		vis.MARGIN = { LEFT: 40, RIGHT: 100, TOP: 40, BOTTOM: 10 }
-		vis.WIDTH = 350 - vis.MARGIN.LEFT - vis.MARGIN.RIGHT
-    vis.HEIGHT = 140 - vis.MARGIN.TOP - vis.MARGIN.BOTTOM
-    vis.RADIUS = Math.min(vis.WIDTH, vis.HEIGHT) / 2
+		const MARGIN = { LEFT: 40, RIGHT: 100, TOP: 40, BOTTOM: 10 }
+		const WIDTH = 350 - const MARGIN.LEFT - const MARGIN.RIGHT
+    const HEIGHT = 140 - const MARGIN.TOP - const MARGIN.BOTTOM
+    const RADIUS = Math.min(const WIDTH, const HEIGHT) / 2
 		
-		vis.svg = d3.select(vis.parentElement).append("svg")
-			.attr("width", vis.WIDTH + vis.MARGIN.LEFT + vis.MARGIN.RIGHT)
-			.attr("height", vis.HEIGHT + vis.MARGIN.TOP + vis.MARGIN.BOTTOM)
+		const svg = d3.select(const parentElement).append("svg")
+			.attr("width", const WIDTH + const MARGIN.LEFT + const MARGIN.RIGHT)
+			.attr("height", const HEIGHT + const MARGIN.TOP + const MARGIN.BOTTOM)
 		
-		vis.g = vis.svg.append("g")
-      .attr("transform", `translate(${vis.MARGIN.LEFT + (vis.WIDTH / 2)},
-        ${vis.MARGIN.TOP + (vis.HEIGHT / 2)})`)
+		const g = const svg.append("g")
+      .attr("transform", `translate(${const MARGIN.LEFT + (const WIDTH / 2)},
+        ${const MARGIN.TOP + (const HEIGHT / 2)})`)
     
-    vis.pie = d3.pie()
+    const pie = d3.pie()
       .padAngle(0.03)
       .value(d => d.count)
       .sort(null)
     
-    vis.arc = d3.arc()
-      .innerRadius(vis.RADIUS - 15)
-      .outerRadius(vis.RADIUS)
+    const arc = d3.arc()
+      .innerRadius(const RADIUS - 15)
+      .outerRadius(const RADIUS)
 
-    vis.g.append("text")
+    const g.append("text")
       .attr("y", -60)
       .attr("x", -140)
       .attr("font-size", "12px")
       .attr("text-anchor", "start")
       .text("Company size")
 
-    vis.color = d3.scaleOrdinal(d3.schemeAccent)
-    vis.addLegend()
+    const color = d3.scaleOrdinal(d3.schemeAccent)
+    const addLegend()
 
-		vis.wrangleData()
+		const wrangleData()
 	}
 
 	wrangleData() {
@@ -56,49 +56,49 @@ class DonutChart {
     const sizeNest = d3.nest()
       .key(d => d.company_size)
       .entries(calls)
-    vis.dataFiltered = sizeNest.map(size => {
+    const dataFiltered = sizeNest.map(size => {
       return {
         value: size.key,
         count: size.values.length
       }
     })
 
-		vis.updateVis()
+		const updateVis()
 	}
 
 	updateVis() {
     const vis = this
 
-    vis.t = d3.transition().duration(750)
+    const t = d3.transition().duration(750)
 
-    vis.path = vis.g.selectAll("path")
-      .data(vis.pie(vis.dataFiltered))
+    const path = const g.selectAll("path")
+      .data(const pie(const dataFiltered))
     
-    vis.path.transition(vis.t)
+    const path.transition(const t)
       .attrTween("d", arcTween)
   
-    vis.path.enter().append("path")
-      .attr("fill", d => vis.color(d.data.value))
-      .transition(vis.t)
+    const path.enter().append("path")
+      .attr("fill", d => const color(d.data.value))
+      .transition(const t)
         .attrTween("d", arcTween)
   
     function arcTween(d) {
       const i = d3.interpolate(this._current, d)
       this._current = i(1)
-      return (t) => vis.arc(i(t))
+      return (t) => const arc(i(t))
     }
   }
 
   addLegend() {
 	  const vis = this
 
-    const legend = vis.g.append("g")
+    const legend = const g.append("g")
       .attr("transform", "translate(150, -30)")
 
     const legendArray = [
-    	{ label: "Small", color: vis.color("small") },
-    	{ label: "Medium", color: vis.color("medium") },
-    	{ label: "Large", color: vis.color("large") }
+    	{ label: "Small", color: const color("small") },
+    	{ label: "Medium", color: const color("medium") },
+    	{ label: "Large", color: const color("large") }
 	  ]
 
     const legendRow = legend.selectAll(".legendRow")

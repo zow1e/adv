@@ -16,31 +16,31 @@ class LineChart {
 	initVis() {
 		const vis = this
 
-		vis.MARGIN = { LEFT: 100, RIGHT: 100, TOP: 30, BOTTOM: 30 }
-		vis.WIDTH = 800 - vis.MARGIN.LEFT - vis.MARGIN.RIGHT
-		vis.HEIGHT = 350 - vis.MARGIN.TOP - vis.MARGIN.BOTTOM
+		const MARGIN = { LEFT: 100, RIGHT: 100, TOP: 30, BOTTOM: 30 }
+		const WIDTH = 800 - const MARGIN.LEFT - const MARGIN.RIGHT
+		const HEIGHT = 350 - const MARGIN.TOP - const MARGIN.BOTTOM
 		
-		vis.svg = d3.select(vis.parentElement).append("svg")
-			.attr("width", vis.WIDTH + vis.MARGIN.LEFT + vis.MARGIN.RIGHT)
-			.attr("height", vis.HEIGHT + vis.MARGIN.TOP + vis.MARGIN.BOTTOM)
+		const svg = d3.select(const parentElement).append("svg")
+			.attr("width", const WIDTH + const MARGIN.LEFT + const MARGIN.RIGHT)
+			.attr("height", const HEIGHT + const MARGIN.TOP + const MARGIN.BOTTOM)
 		
-		vis.g = vis.svg.append("g")
-			.attr("transform", `translate(${vis.MARGIN.LEFT}, ${vis.MARGIN.TOP})`)
+		const g = const svg.append("g")
+			.attr("transform", `translate(${const MARGIN.LEFT}, ${const MARGIN.TOP})`)
 		
 		// time parsers/formatters
-		vis.parseTime = d3.timeParse("%d/%m/%Y")
-		vis.formatTime = d3.timeFormat("%d/%m/%Y")
+		const parseTime = d3.timeParse("%d/%m/%Y")
+		const formatTime = d3.timeFormat("%d/%m/%Y")
 		// for tooltip
-		vis.bisectDate = d3.bisector(d => d.date).left
+		const bisectDate = d3.bisector(d => d.date).left
 		
 		// add the line for the first time
-		vis.g.append("path")
+		const g.append("path")
 			.attr("class", "line")
 			.attr("fill", "none")
 			.attr("stroke", "grey")
 			.attr("stroke-width", "3px")
 		
-		vis.yLabel = vis.g.append("text")
+		const yLabel = const g.append("text")
 			.attr("class", "y axisLabel")
 			.attr("transform", "rotate(-90)")
 			.attr("y", -60)
@@ -50,24 +50,24 @@ class LineChart {
 			.text("Price ($)")
 		
 		// scales
-		vis.x = d3.scaleTime().range([0, vis.WIDTH])
-		vis.y = d3.scaleLinear().range([vis.HEIGHT, 0])
+		const x = d3.scaleTime().range([0, const WIDTH])
+		const y = d3.scaleLinear().range([const HEIGHT, 0])
 		
 		// axis generators
-		vis.xAxisCall = d3.axisBottom()
+		const xAxisCall = d3.axisBottom()
 			.ticks(5)
-		vis.yAxisCall = d3.axisLeft()
+		const yAxisCall = d3.axisLeft()
 			.ticks(6)
 			.tickFormat(d => `${parseInt(d / 1000)}k`)
 		
 		// axis groups
-		vis.xAxis = vis.g.append("g")
+		const xAxis = const g.append("g")
 			.attr("class", "x axis")
-			.attr("transform", `translate(0, ${vis.HEIGHT})`)
-		vis.yAxis = vis.g.append("g")
+			.attr("transform", `translate(0, ${const HEIGHT})`)
+		const yAxis = const g.append("g")
 			.attr("class", "y axis")
 				
-		vis.wrangleData()
+		const wrangleData()
 	}
 
 	// wrangleData method - selecting/filtering the data that we want to use.
@@ -75,27 +75,27 @@ class LineChart {
 		const vis = this
 
 		// filter data based on selections
-		vis.coin = $("#coin-select").val()
-		vis.yValue = $("#var-select").val()
-		vis.sliderValues = $("#date-slider").slider("values")
-		vis.dataTimeFiltered = filteredData[vis.coin].filter(d => {
-			return ((d.date >= vis.sliderValues[0]) && (d.date <= vis.sliderValues[1]))
+		const coin = $("#coin-select").val()
+		const yValue = $("#var-select").val()
+		const sliderValues = $("#date-slider").slider("values")
+		const dataTimeFiltered = filteredData[const coin].filter(d => {
+			return ((d.date >= const sliderValues[0]) && (d.date <= const sliderValues[1]))
 		})
 
-		vis.updateVis()
+		const updateVis()
 	}
 
 	// updateVis method - updating our elements to match the new data.
 	updateVis() {
 		const vis = this
 
-		vis.t = d3.transition().duration(1000)
+		const t = d3.transition().duration(1000)
 
 		// update scales
-		vis.x.domain(d3.extent(vis.dataTimeFiltered, d => d.date))
-		vis.y.domain([
-			d3.min(vis.dataTimeFiltered, d => d[vis.yValue]) / 1.005, 
-			d3.max(vis.dataTimeFiltered, d => d[vis.yValue]) * 1.005
+		const x.domain(d3.extent(const dataTimeFiltered, d => d.date))
+		const y.domain([
+			d3.min(const dataTimeFiltered, d => d[const yValue]) / 1.005, 
+			d3.max(const dataTimeFiltered, d => d[const yValue]) * 1.005
 		])
 	
 		// fix for format values
@@ -110,76 +110,76 @@ class LineChart {
 		}
 	
 		// update axes
-		vis.xAxisCall.scale(vis.x)
-		vis.xAxis.transition(vis.t).call(vis.xAxisCall)
-		vis.yAxisCall.scale(vis.y)
-		vis.yAxis.transition(vis.t).call(vis.yAxisCall.tickFormat(formatAbbreviation))
+		const xAxisCall.scale(const x)
+		const xAxis.transition(const t).call(const xAxisCall)
+		const yAxisCall.scale(const y)
+		const yAxis.transition(const t).call(const yAxisCall.tickFormat(formatAbbreviation))
 	
 		// clear old tooltips
-		vis.g.select(".focus").remove()
-		vis.g.select(".overlay").remove()
+		const g.select(".focus").remove()
+		const g.select(".overlay").remove()
 	
 		/******************************** Tooltip Code ********************************/
 	
-		vis.focus = vis.g.append("g")
+		const focus = const g.append("g")
 			.attr("class", "focus")
 			.style("display", "none")
 	
-		vis.focus.append("line")
+		const focus.append("line")
 			.attr("class", "x-hover-line hover-line")
 			.attr("y1", 0)
-			.attr("y2", vis.HEIGHT)
+			.attr("y2", const HEIGHT)
 	
-		vis.focus.append("line")
+		const focus.append("line")
 			.attr("class", "y-hover-line hover-line")
 			.attr("x1", 0)
-			.attr("x2", vis.WIDTH)
+			.attr("x2", const WIDTH)
 	
-		vis.focus.append("circle")
+		const focus.append("circle")
 			.attr("r", 7.5)
 	
-		vis.focus.append("text")
+		const focus.append("text")
 			.attr("x", 15)
 			.attr("dy", ".31em")
 	
-		vis.g.append("rect")
+		const g.append("rect")
 			.attr("class", "overlay")
-			.attr("width", vis.WIDTH)
-			.attr("height", vis.HEIGHT)
-			.on("mouseover", () => vis.focus.style("display", null))
-			.on("mouseout", () => vis.focus.style("display", "none"))
+			.attr("width", const WIDTH)
+			.attr("height", const HEIGHT)
+			.on("mouseover", () => const focus.style("display", null))
+			.on("mouseout", () => const focus.style("display", "none"))
 			.on("mousemove", mousemove)
 	
 		function mousemove() {
-			const x0 = vis.x.invert(d3.mouse(this)[0])
-			const i = vis.bisectDate(vis.dataTimeFiltered, x0, 1)
-			const d0 = vis.dataTimeFiltered[i - 1]
-			const d1 = vis.dataTimeFiltered[i]
+			const x0 = const x.invert(d3.mouse(this)[0])
+			const i = const bisectDate(const dataTimeFiltered, x0, 1)
+			const d0 = const dataTimeFiltered[i - 1]
+			const d1 = const dataTimeFiltered[i]
 			const d = x0 - d0.date > d1.date - x0 ? d1 : d0
-			vis.focus.attr("transform", `translate(${vis.x(d.date)}, ${vis.y(d[vis.yValue])})`)
-			vis.focus.select("text").text(d[vis.yValue])
-			vis.focus.select(".x-hover-line").attr("y2", vis.HEIGHT - vis.y(d[vis.yValue]))
-			vis.focus.select(".y-hover-line").attr("x2", -vis.x(d.date))
+			const focus.attr("transform", `translate(${const x(d.date)}, ${const y(d[const yValue])})`)
+			const focus.select("text").text(d[const yValue])
+			const focus.select(".x-hover-line").attr("y2", const HEIGHT - const y(d[const yValue]))
+			const focus.select(".y-hover-line").attr("x2", -const x(d.date))
 		}
 		
 		/******************************** Tooltip Code ********************************/
 	
 		// Path generator
-		vis.line = d3.line()
-			.x(d => vis.x(d.date))
-			.y(d => vis.y(d[vis.yValue]))
+		const line = d3.line()
+			.x(d => const x(d.date))
+			.y(d => const y(d[const yValue]))
 	
 		// Update our line path
-		vis.g.select(".line")
-			.attr("stroke", color(vis.coin))
-			.transition(vis.t)
-			.attr("d", vis.line(vis.dataTimeFiltered))
+		const g.select(".line")
+			.attr("stroke", color(const coin))
+			.transition(const t)
+			.attr("d", const line(const dataTimeFiltered))
 	
 		// Update y-axis label
-		const newText = (vis.yValue === "price_usd") ? "Price ($)" 
-			: (vis.yValue === "market_cap") ? "Market Capitalization ($)" 
+		const newText = (const yValue === "price_usd") ? "Price ($)" 
+			: (const yValue === "market_cap") ? "Market Capitalization ($)" 
 				: "24 Hour Trading Volume ($)"
-		vis.yLabel.text(newText)
+		const yLabel.text(newText)
 	}
 }
 

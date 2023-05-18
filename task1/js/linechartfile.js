@@ -2,7 +2,8 @@
 *    line chart
 */
 
-class LineChart {
+class LINECHART {
+  
     constructor(_parentElement) {
       this.parentElement = _parentElement
   
@@ -41,6 +42,24 @@ class LineChart {
       
         vis.yAxisGroup = vis.g.append("g")
         .attr("class", "y axis")
+
+        // X label
+        vis.g.append("text")
+        .attr("class", "x axis-label")
+        .attr("x", WIDTH / 2)
+        .attr("y", HEIGHT + 60)
+        .attr("font-size", "20px")
+        .attr("text-anchor", "middle")
+        .text("Year")
+
+        // Y label
+        vis.Ylabel = vis.g.append("text")
+        .attr("class", "y axis-label")
+        .attr("x", - (HEIGHT / 2))
+        .attr("y", -60)
+        .attr("font-size", "20px")
+        .attr("text-anchor", "middle")
+        .attr("transform", "rotate(-90)")
   
       // vis.stack = d3.stack()
       //   .keys(["west", "south", "northeast", "midwest"])
@@ -50,7 +69,7 @@ class LineChart {
       //   .y0(d => vis.y(d[0]))
       //   .y1(d => vis.y(d[1]))
   
-      vis.addLegend()
+      // vis.addLegend()
   
       vis.wrangleData()
     }
@@ -86,35 +105,71 @@ class LineChart {
   
       vis.t = d3.transition().duration(750)
   
-      // vis.maxDateVal = d3.max(vis.dataFiltered, d => {
-      //   var vals = d3.keys(d).map(key => key !== 'date' ? d[key] : 0)
-      //   return d3.sum(vals)
-      // })
-  
-      // update scales
-      vis.x.domain(d3.extent(vis.dataFiltered, (d) => parseTime(d.date)))
-      vis.y.domain([0, vis.maxDateVal])
-  
-      // update axes
-      vis.xAxisCall.scale(vis.x)
-      vis.xAxis.transition(vis.t).call(vis.xAxisCall)
-      vis.yAxisCall.scale(vis.y)
-      vis.yAxis.transition(vis.t).call(vis.yAxisCall)
-  
-      vis.teams = vis.g.selectAll(".team")
-        .data(vis.stack(vis.dataFiltered))
+      const value = flag ? "remainingyrs" : "resale_price"
+    
+    
+      vis.x.domain(d3.extent(yrs))
+      console.log(yrs)
+      vis.y.domain([d3.min(resalepriceavg), 
+                d3.max(resalepriceavg)])
       
-      // update the path for each team
-      vis.teams.select(".area")
-        .attr("d", vis.area)
-  
-      vis.teams.enter().append("g")
-        .attr("class", d => `team ${d.key}`)
-        .append("path")
-          .attr("class", "area")
-          .attr("d", vis.area)
-          .style("fill", d => vis.color(d.key))
-          .style("fill-opacity", 0.5)
+      vis.xAxisCall = d3.axisBottom(x)
+      .tickValues(yrs)
+      .tickFormat((y, i) => yrs[i])
+      vis.xAxisGroup.transition(t).call(xAxisCall)  
+        .selectAll("text")
+          .attr("y", "10")
+          .attr("x", "-5")
+          .attr("text-anchor", "end")
+          .attr("transform", "rotate(-40)")
+          
+    
+          vis.yAxisCall = d3.axisLeft(y)
+        .ticks(3)
+        .tickFormat(d => "$"+d)
+        vis.yAxisGroup.transition(t).call(yAxisCall) 
+    
+      // // JOIN new data with old elements.
+      // const rects = g.selectAll("line")
+      //   // .data(data, d => d.year)
+      //   .data(yrs) 
+    
+      // // EXIT old elements not present in new data.
+      // rects.exit()
+      //   .attr("fill", "red")
+      //   .transition(t)
+      //     .attr("cy", y(0))
+      //     .remove()
+    
+      // // ENTER new elements present in new data...
+      // rects.enter().append("circle")
+      //   .attr("fill", "grey")
+      //   .attr("cy", y(0))
+      //   .attr("r", 5)
+      //   // AND UPDATE old elements present in new data.
+      //   .merge(rects)
+      //   .transition(t)
+      //     .attr("cx", (d) => x(d) + (x.bandwidth() / 2))
+      //     .attr("cy", (d, i) => y(resalepriceavg[i]))
+    
+    
+      // draw line
+      vis.line = d3.line()
+      .x(d => x(d))
+      .y((d, i) => y(resalepriceavg[i]))
+    
+      // add line to chart
+      g.append("path")
+      .datum(yrs)
+      .attr("class", "line")
+      .attr("fill", "none")
+      .attr("stroke", "grey")
+      .attr("stroke-width", "3px")
+      // .attr("d", line(yrs))
+      .attr("d", line)
+    
+       vis.text = flag ? "Avg Revenue ($)" : "Profit ($)"
+       this.Ylabel.text(text)
     }
   
     addLegend() {
@@ -150,4 +205,4 @@ class LineChart {
         .attr("text-anchor", "start")
         .text(d => d.label)
     }
-  }
+}

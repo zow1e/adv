@@ -113,10 +113,10 @@ d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
   
 }
 
-const yrs = [...new Set(allyears)]
-const months = [...new Set(allmonths)]
+// const yrs = [...new Set(allyears)]
+// const months = [...new Set(allmonths)]
 
-const resalepriceavg = avg(data, yrs, 'year', 'resale_price')
+// const resalepriceavg = avg(data, yrs, 'year', 'resale_price')
 
 
 
@@ -126,38 +126,44 @@ const resalepriceavg = avg(data, yrs, 'year', 'resale_price')
 // global.resalepriceavg = avg(data, yrs, 'year', 'resale_price')
 
 
-// var yrs = [...new Set(allyears)]
-// var months = [...new Set(allmonths)]
+yrs = [...new Set(allyears)]
+months = [...new Set(allmonths)]
 
-// var resalepriceavg = avg(data, yrs, 'year', 'resale_price')
+resalepriceavg = avg(data, yrs, 'year', 'resale_price')
 
 avgobject = {}
 avgobject.year = yrs
 avgobject.price = resalepriceavg
 
 $("#var-select").on("change", () => {
-  stackedArea.wrangleData()
-  timeline.wrangleData()
+  // stackedArea.wrangleData()
+  // createlinechart()
 })
 
   d3.interval(() => {
     // flag = !flag
     // const newData = flag ? data : data.slice(1) 
     // update(newData) 
+    
     update(data)
-  }, 1000)
+  }, 500)
 
   
-//   update(data)
+  // update(data)
+  createlinechart(window.yrs, window.resalepriceavg)
+  // linevalues = createlinechart(window.yrs, window.resalepriceavg)
+  // linex = linevalues[0]
+  // liney = linevalues[1]
+  // console.log(linevalues)
 })
 
-// lineline.wrangleData()
 
 
 function update(data) {
+  updateline(window.yrs, window.resalepriceavg)
  
 }
 
 console.log('main done')
 
-export { yrs , months, resalepriceavg};
+// export { yrs , months, resalepriceavg};

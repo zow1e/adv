@@ -1,39 +1,40 @@
 /*
 *    line chart
 */
-import { yrs , months, resalepriceavg} from main.js
+// import { yrs , months, resalepriceavg} from main.js
+
+function createlinechart(xaxis, yaxis,) {
+
+  // console.log(xaxis)
+  // console.log(yaxis)
 
 console.log('linechart printing')
 
-const MARGIN = { LEFT: 80, RIGHT: 100, TOP: 50, BOTTOM: 40 }
-const WIDTH = 700 - MARGIN.LEFT - MARGIN.RIGHT
-const HEIGHT = 370 - MARGIN.TOP - MARGIN.BOTTOM
+MARGIN = { LEFT: 80, RIGHT: 100, TOP: 50, BOTTOM: 40 }
+WIDTH = 700 - MARGIN.LEFT - MARGIN.RIGHT
+HEIGHT = 370 - MARGIN.TOP - MARGIN.BOTTOM
   
 const svg = d3.select('#line-chart').append("svg")
         .attr("width", WIDTH + MARGIN.LEFT + MARGIN.RIGHT)
         .attr("height", HEIGHT + MARGIN.TOP + MARGIN.BOTTOM)
   
-        const g = svg.append("g")
+        g = svg.append("g")
         .attr("transform", `translate(${MARGIN.LEFT}, ${MARGIN.TOP})`)
   
-      // line chart
-      const x = d3.scaleTime()
+      // // line chart
+      x = d3.scaleTime()
       .rangeRound([0, WIDTH])
 
-      const y = d3.scaleLinear()
+      y = d3.scaleLinear()
         .range([HEIGHT, 0])
-
-
-    const yAxisCall = d3.axisLeft()
-    const xAxisCall = d3.axisBottom()
-        .ticks(4)
         
-        const xAxisGroup = g.append("g")
+        xAxisGroup = g.append("g")
         .attr("class", "x axis")
         .attr("transform", `translate(0, ${HEIGHT})`)
       
-        const yAxisGroup = g.append("g")
+        yAxisGroup = g.append("g")
         .attr("class", "y axis")
+  
 
         // X label
         g.append("text")
@@ -45,7 +46,7 @@ const svg = d3.select('#line-chart').append("svg")
         .text("Year")
 
         // Y label
-        const Ylabel = g.append("text")
+        Ylabel = g.append("text")
         .attr("class", "y axis-label")
         .attr("x", - (HEIGHT / 2))
         .attr("y", -60)
@@ -63,13 +64,16 @@ const svg = d3.select('#line-chart').append("svg")
   
       // const addLegend()
   
-    //   wrangleData()
-    
+      updateline(xaxis, yaxis)
+
+      // return [x, y]
+}
   
   
-    // wrangleData() {
-  
-      const variable = $("#var-select").val()
+    function updateline(xaxis, yaxis) {
+
+      // line chart
+      
       // const dayNest = d3.nest()
       //   .key(d => formatTime(d.date))
       //   .entries(calls)
@@ -96,26 +100,19 @@ const svg = d3.select('#line-chart').append("svg")
     // var years = window.yrs
     // var rpriceavg = window.resalepriceavg
 
-    var years = yrs
-    var rpriceavg = resalepriceavg
-
-
-
-    console.log(years)
   
       const t = d3.transition().duration(750)
   
-      const value = flag ? "remainingyrs" : "resale_price"
+      const value = flag ? "remainingyrs" : "resale_price";
     
-    
-      x.domain(d3.extent(years))
-      console.log(years)
-      y.domain([d3.min(rpriceavg), 
-                d3.max(rpriceavg)])
+      x.domain(d3.extent(xaxis))
+
+      y.domain([d3.min(yaxis), 
+                d3.max(yaxis)])
       
-      AxisCall = d3.axisBottom(x)
-      .tickValues(years)
-      .tickFormat((y, i) => years[i])
+      const xAxisCall = d3.axisBottom(x)
+      .tickValues(xaxis)
+      .tickFormat((y, i) => xaxis[i])
       xAxisGroup.transition(t).call(xAxisCall)  
         .selectAll("text")
           .attr("y", "10")
@@ -153,55 +150,79 @@ const svg = d3.select('#line-chart').append("svg")
       //     .attr("cy", (d, i) => y(resalepriceavg[i]))
     
     
+      console.log('draw line')
       // draw line
       const line = d3.line()
       .x(d => x(d))
-      .y((d, i) => y(rpriceavg[i]))
-    
-      // add line to chart
+      .y((d, i) => y(yaxis[i]))
+
       g.append("path")
-      .datum(years)
+		.transition(t)
       .attr("class", "line")
       .attr("fill", "none")
-      .attr("stroke", "grey")
+      .attr("stroke", "blue")
       .attr("stroke-width", "3px")
-      // .attr("d", line(yrs))
-      .attr("d", line)
+      .attr("d", line(xaxis))
+
+      // //remove
+      // linesss.exit().remove()
+
+      // //update
+      // linesss
+      // .attr("class", "line")
+      // .attr("fill", "none")
+      // .attr("stroke", "blue")
+      // .attr("stroke-width", "3px")
+      // // .attr("d", line(yrs))
+      // .attr("d", line)
     
-       const text = flag ? "Avg Revenue ($)" : "Profit ($)"
-       this.Ylabel.text(text)
+      // // add line to chart
+      // linesss.append("path")
+      // .transition(t)
+      // // .datum(xaxis)
+      // .attr("class", "line")
+      // .attr("fill", "none")
+      // .attr("stroke", "blue")
+      // .attr("stroke-width", "3px")
+      // // .attr("d", line(yrs))
+      // .attr("d", line)
+    
+      const flagtxt = flag ? "Avg Revenue ($)" : "Profit ($)"
+     Ylabel.text(flagtxt)
     // }
   
-    addLegend() ;{
-      const vis = this
+    // addLegend() {
+    //   const vis = this
   
-      const legend = g.append("g")
-        .attr("transform", "translate(50, -25)")
+    //   const legend = g.append("g")
+    //     .attr("transform", "translate(50, -25)")
   
-      const legendArray = [
-        { label: "Northeast", color: color("northeast") },
-        { label: "West", color: color("west") },
-        { label: "South", color: color("south") },
-        { label: "Midwest", color: color("midwest" )}
-      ]
+    //   const legendArray = [
+    //     { label: "Northeast", color: color("northeast") },
+    //     { label: "West", color: color("west") },
+    //     { label: "South", color: color("south") },
+    //     { label: "Midwest", color: color("midwest" )}
+    //   ]
   
-      const legendCol = legend.selectAll(".legendCol")
-        .data(legendArray)
-        .enter().append("g")
-          .attr("class", "legendCol")
-          .attr("transform", (d, i) => `translate(${i * 100}, 0)`)
+    //   const legendCol = legend.selectAll(".legendCol")
+    //     .data(legendArray)
+    //     .enter().append("g")
+    //       .attr("class", "legendCol")
+    //       .attr("transform", (d, i) => `translate(${i * 100}, 0)`)
           
-      legendCol.append("rect")
-        .attr("class", "legendRect")
-        .attr("width", 10)
-        .attr("height", 10)
-        .attr("fill", d => d.color)
-        .attr("fill-opacity", 0.5)
+    //   legendCol.append("rect")
+    //     .attr("class", "legendRect")
+    //     .attr("width", 10)
+    //     .attr("height", 10)
+    //     .attr("fill", d => d.color)
+    //     .attr("fill-opacity", 0.5)
   
-      legendCol.append("text")
-        .attr("class", "legendText")
-        .attr("x", 20)
-        .attr("y", 10)
-        .attr("text-anchor", "start")
-        .text(d => d.label)
-    }
+    //   legendCol.append("text")
+    //     .attr("class", "legendText")
+    //     .attr("x", 20)
+    //     .attr("y", 10)
+    //     .attr("text-anchor", "start")
+    //     .text(d => d.label)
+    // };
+
+  }

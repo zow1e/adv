@@ -61,12 +61,15 @@ const svg = d3.select('#line-chart').append("svg")
   
       // const addLegend()
   
-      updateline(xaxis, yaxis)
+      updateline(xaxis, yaxis, 'Avg Resale Price ($)')
 
 }
   
   
-    function updateline(xaxis, yaxis) {
+    function updateline(xaxis, yaxis, ylabel) {
+
+      console.log('updating line')
+      // console.log(xaxis)
 
 
       // const dayNest = d3.nest()
@@ -96,9 +99,9 @@ const svg = d3.select('#line-chart').append("svg")
     // var rpriceavg = window.resalepriceavg
 
   
-      const t = d3.transition().duration(750)
+      const t = d3.transition().duration(500)
   
-      const value = flag ? "remainingyrs" : "resale_price";
+      // const value = flag ? "remainingyrs" : "resale_price";
     
       x.domain(d3.extent(xaxis))
 
@@ -107,8 +110,10 @@ const svg = d3.select('#line-chart').append("svg")
       
       const xAxisCall = d3.axisBottom(x)
       .tickValues(xaxis)
-      .tickFormat((y, i) => xaxis[i])
-      xAxisGroup.transition(t).call(xAxisCall)  
+      .tickFormat((d) => d)
+
+      xAxisGroup
+      .transition(t).call(xAxisCall)  
         .selectAll("text")
           .attr("y", "10")
           .attr("x", "-5")
@@ -119,7 +124,11 @@ const svg = d3.select('#line-chart').append("svg")
         yAxisCall = d3.axisLeft(y)
         .ticks(3)
         .tickFormat(d => "$"+d)
-        yAxisGroup.transition(t).call(yAxisCall) 
+        yAxisGroup
+        .transition(t)
+        .call(yAxisCall) 
+
+        d3.selectAll("path.line").remove();
 
       // draw line
       const line = d3.line()
@@ -135,8 +144,8 @@ const svg = d3.select('#line-chart').append("svg")
       .attr("d", line(xaxis))
 
     
-      const flagtxt = flag ? "Avg Revenue ($)" : "Profit ($)"
-     Ylabel.text(flagtxt)
+      // const flagtxt = flag ? "Avg Revenue ($)" : "Profit ($)"
+     Ylabel.text(ylabel)
     // }
   
     // addLegend() {

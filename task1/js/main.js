@@ -5,6 +5,7 @@
 
 const parseTime = d3.timeParse("%Y-%m")
 const formatTime = d3.timeFormat("%m-%Y")
+const formatMonth = d3.timeFormat("%m")
 
 monthNames = [ "January", "February", "March", "April", "May", "June",
 "July", "August", "September", "October", "November", "December" ];
@@ -15,8 +16,8 @@ let flag = true
 let lineline
 
 
-d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
-  // d3.csv("data/small.csv").then(data => {
+// d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
+  d3.csv("data/small.csv").then(data => {
 
     var allyears = []
     var allmonths = []
@@ -31,7 +32,7 @@ d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
     
     d.date = formatTime(parseTime(d.month))
     d.year = parseTime(d.month).getFullYear()
-    d.month = parseTime(d.month).getMonth()
+    d.month = formatMonth(parseTime(d.month))
 
     d.remainingyrs = d.year - d.lease_commence_date
 
@@ -44,16 +45,20 @@ d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
 
   // dates (year/month), measure (resale_price / floor_area_sqm etc)
   function avg(data, dates, timecol, measurecol) {
+
+    // console.log(data, dates, timecol, measurecol)
     measureavg = []
 
     for (let y = 0; y < dates.length; y++) {
         durationlist = []
 
     for (let i = 0; i < data.length; i++) {
-        if (data[i][timecol] == yrs[y]){
+        if (data[i][timecol] == dates[y]){
           durationlist.push(data[i][measurecol])
         }
       }
+
+      console.log(durationlist)
 
       value = durationlist.reduce((a, b) => a + b, 0) / durationlist.length
       measureavg.push(value)
@@ -74,36 +79,80 @@ d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
   months = [...new Set(allmonths)]
   dateall = [...new Set(alldates)]
 
+  console.log(months)
+
+  
+
+  //default values
   resalepriceavg = avg(data, yrs, 'year', 'resale_price')
 
-  avgobject = {}
-  avgobject.year = yrs
-  avgobject.price = resalepriceavg
+  // avgobject = {}
+  // avgobject.year = yrs
+  // avgobject.price = resalepriceavg
 
-  function checktime(time, value) {
+  function checktime(time) {
     if (time == 'year') {
-      updateline(window.yrs, value)
+      return window.yrs
     }
     else if (time == 'month'){
-      updateline(window.monthNames, value)
+      return window.months
     }
     else {
-      updateline(window.dateall, value)
+      return window.dateall
     }
   }
 
-  $("#var-select").on("change", () => {
-    const value = $("#var-select").val()
-    const time = $("#var-time").val()
+  function checkval(value, xaxis, timecol) {
+    if (value == 'resale_price') {
 
-    checktime(time, value)
+      // console.log('checking value', value)
+      
+      resaleavg = avg(data, xaxis, timecol, value)
+      label = 'Avg Resale Price ($)'
+      return [resaleavg, label]
+      
+    }
+    // else if (time == 'month'){
+    //   resalepriceavg = avg(data, yrs, 'year', 'resale_price')
+    //   return updateline(time, resalepriceavg)
+    // }
+    // else {
+    //   updateline(window.dateall, value)
+    // }
+  }
+
+  // change value in filter
+  $("#var-select").on("change", () => {
+    console.log('change value')
+
+    const value = $("#var-select").val()
+    const time = $("#var-time-select").val()
+    
+    xaxis = checktime(time)
+
+    valuecheck = checkval(value, xaxis, time)
+    yaxis = valuecheck[0]
+    ylabel = valuecheck[1]
+
+    console.log(xaxis, yaxis)
+    updateline(xaxis, yaxis, ylabel)
   })
 
+  // change time in filter
   $("#var-time-select").on("change", () => {
+    console.log('change time')
+
     const value = $("#var-select").val()
-    const time = $("#var-time").val()
+    const time = $("#var-time-select").val()
     
-    checktime(time, value)
+    xaxis = checktime(time)
+
+    valuecheck = checkval(value, xaxis, time)
+    yaxis = valuecheck[0]
+    ylabel = valuecheck[1]
+
+    console.log(xaxis, yaxis)
+    updateline(xaxis, yaxis, ylabel)
   })
 
   d3.interval(() => {
@@ -112,7 +161,7 @@ d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
     // update(newData) 
     
     update(data)
-  }, 500)
+  }, 1000)
 
   
   // update(data)
@@ -126,7 +175,9 @@ d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
 
 
 function update(data) {
-  updateline(window.yrs, window.resalepriceavg)
+  //default charts 
+  
+  // updateline(window.yrs, window.resalepriceavg)
  
 }
 

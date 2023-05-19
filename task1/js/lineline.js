@@ -3,53 +3,53 @@
 */
 
 
-function createlinechart(xaxis, yaxis,) {
+function createlinechart(xaxis, yaxis) {
 
-console.log('linechart printing')
+  console.log('linechart printing')
 
-MARGIN = { LEFT: 80, RIGHT: 100, TOP: 50, BOTTOM: 40 }
-WIDTH = 700 - MARGIN.LEFT - MARGIN.RIGHT
-HEIGHT = 370 - MARGIN.TOP - MARGIN.BOTTOM
-  
-const svg = d3.select('#line-chart').append("svg")
-        .attr("width", WIDTH + MARGIN.LEFT + MARGIN.RIGHT)
-        .attr("height", HEIGHT + MARGIN.TOP + MARGIN.BOTTOM)
-  
-        g = svg.append("g")
-        .attr("transform", `translate(${MARGIN.LEFT}, ${MARGIN.TOP})`)
+  MARGIN = { LEFT: 80, RIGHT: 100, TOP: 50, BOTTOM: 40 }
+  WIDTH = 700 - MARGIN.LEFT - MARGIN.RIGHT
+  HEIGHT = 370 - MARGIN.TOP - MARGIN.BOTTOM
+    
+  const svg = d3.select('#line-chart').append("svg")
+    .attr("width", WIDTH + MARGIN.LEFT + MARGIN.RIGHT)
+    .attr("height", HEIGHT + MARGIN.TOP + MARGIN.BOTTOM)
+
+  g = svg.append("g")
+    .attr("transform", `translate(${MARGIN.LEFT}, ${MARGIN.TOP})`)
   
       // // line chart
-      x = d3.scaleTime()
-      .rangeRound([0, WIDTH])
+  x = d3.scaleTime()
+    .rangeRound([0, WIDTH])
 
-      y = d3.scaleLinear()
-        .range([HEIGHT, 0])
-        
-        xAxisGroup = g.append("g")
-        .attr("class", "x axis")
-        .attr("transform", `translate(0, ${HEIGHT})`)
-      
-        yAxisGroup = g.append("g")
-        .attr("class", "y axis")
+  y = d3.scaleLinear()
+    .range([HEIGHT, 0])
+    
+  xAxisGroup = g.append("g")
+    .attr("class", "x axis")
+    .attr("transform", `translate(0, ${HEIGHT})`)
   
+  yAxisGroup = g.append("g")
+    .attr("class", "y axis")
 
-        // X label
-        g.append("text")
-        .attr("class", "x axis-label")
-        .attr("x", WIDTH / 2)
-        .attr("y", HEIGHT + 60)
-        .attr("font-size", "20px")
-        .attr("text-anchor", "middle")
-        .text("Year")
 
-        // Y label
-        Ylabel = g.append("text")
-        .attr("class", "y axis-label")
-        .attr("x", - (HEIGHT / 2))
-        .attr("y", -60)
-        .attr("font-size", "20px")
-        .attr("text-anchor", "middle")
-        .attr("transform", "rotate(-90)")
+    // X label
+  g.append("text")
+    .attr("class", "x axis-label")
+    .attr("x", WIDTH / 2)
+    .attr("y", HEIGHT + 60)
+    .attr("font-size", "20px")
+    .attr("text-anchor", "middle")
+    .text("Year")
+
+    // Y label
+  Ylabel = g.append("text")
+    .attr("class", "y axis-label")
+    .attr("x", - (HEIGHT / 2))
+    .attr("y", -60)
+    .attr("font-size", "20px")
+    .attr("text-anchor", "middle")
+    .attr("transform", "rotate(-90)")
   
       // const stack = d3.stack()
       //   .keys(["west", "south", "northeast", "midwest"])
@@ -99,7 +99,7 @@ const svg = d3.select('#line-chart').append("svg")
     // var rpriceavg = window.resalepriceavg
 
   
-      const t = d3.transition().duration(500)
+      const t = d3.transition().duration(600)
   
       // const value = flag ? "remainingyrs" : "resale_price";
     
@@ -113,7 +113,7 @@ const svg = d3.select('#line-chart').append("svg")
       .tickFormat((d) => d)
 
       xAxisGroup
-      .transition(t).call(xAxisCall)  
+      .transition(t).ease(d3.easeLinear).call(xAxisCall)  
         .selectAll("text")
           .attr("y", "10")
           .attr("x", "-5")
@@ -128,7 +128,7 @@ const svg = d3.select('#line-chart').append("svg")
         .transition(t)
         .call(yAxisCall) 
 
-        d3.selectAll("path.line").remove();
+      d3.selectAll("path.line").remove();
 
       // draw line
       const line = d3.line()
@@ -136,12 +136,15 @@ const svg = d3.select('#line-chart').append("svg")
       .y((d, i) => y(yaxis[i]))
 
       g.append("path")
-		.transition(t)
+		  .transition(t)
+      // .datum(xaxis)
       .attr("class", "line")
       .attr("fill", "none")
       .attr("stroke", "blue")
       .attr("stroke-width", "3px")
       .attr("d", line(xaxis))
+      
+      console.log(typeof xaxis[0])
 
     
       // const flagtxt = flag ? "Avg Revenue ($)" : "Profit ($)"

@@ -93,31 +93,35 @@ class BarChart {
     const yAxisCall.scale(const y)
     const yAxis.transition(const t).call(const yAxisCall)
 
-    const rects = const g.selectAll("rect")
-      .data(const dataFiltered, d => d.category)
-
-    const rects.exit()
-      .attr("class", "exit")
-      .transition(const t)
-        .attr("height", 0)
-        .attr("y", const HEIGHT)
-        .style("fill-opacity", "0.1")
-        .remove()
-
-    const rects
-      .attr("class", "update")
-      .transition(const t)
-        .attr("y", d => const y(d.size))
-        .attr("height", d => (const HEIGHT - const y(d.size)))
-        .attr("x", d => const x(d.category))
-        .attr("width", const x.bandwidth)
-
-    const rects.enter().append("rect")
-      .attr("class", "enter")
-      .attr("y", d => const y(d.size))
-      .attr("height", d => (const HEIGHT - const y(d.size)))
-      .attr("x", d => const x(d.category))
-      .attr("width", const x.bandwidth)
-      .attr("fill", "#ccc")
+        // draw bars
+        const rects = g.selectAll("rect")
+        .data(dataFiltered, d => d.town)
+      
+        // delete gone bars
+        rects.exit()
+        .attr("class", "exit")
+        .transition(t)
+          .attr("height", 0)
+          .attr("y", HEIGHT)
+          .style("fill-opacity", "0.1")
+          .remove()
+  
+          //update repeat bars
+          rects
+        .attr("class", "update")
+        .transition(t)
+          .attr("y", d => y(d.size))
+          .attr("height", d => (HEIGHT - y(d.size)))
+          .attr("x", d => x(d.category))
+          .attr("width", x.bandwidth)
+  
+          //add new bars
+          rects.enter().append("rect")
+        .attr("class", "enter")
+        .attr("y", d => y(d.size))
+        .attr("height", d => (HEIGHT - y(d.size)))
+        .attr("x", d => x(d.category))
+        .attr("width", x.bandwidth)
+        .attr("fill", "#ccc")
   }
 }

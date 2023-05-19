@@ -11,17 +11,19 @@ monthNames = [ "January", "February", "March", "April", "May", "June",
 "July", "August", "September", "October", "November", "December" ];
 
 
-let flag = true
-
+// import chart files
 let lineline
+let barfile
 
 
 // d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
-  d3.csv("data/small.csv").then(data => {
+d3.csv("data/small.csv").then(data => {
 
     var allyears = []
     var allmonths = []
     var alldates = []
+
+    var alltowns = []
     
 
   data.forEach(d => {
@@ -39,10 +41,12 @@ let lineline
     allyears.push(d.year)
     allmonths.push(d.month)
     alldates.push(d.date)
+    alltowns.push(d.town)
 
 
   })
 
+  // aggregate data
   // dates (year/month), measure (resale_price / floor_area_sqm etc)
   function avg(data, dates, timecol, measurecol) {
 
@@ -57,8 +61,6 @@ let lineline
           durationlist.push(data[i][measurecol])
         }
       }
-
-      console.log(durationlist)
 
       value = durationlist.reduce((a, b) => a + b, 0) / durationlist.length
       measureavg.push(value)
@@ -75,21 +77,21 @@ let lineline
   span2 = document.getElementById('dateLabel2')
   span2.textContent = daterange[1]
 
+  //date lists
   yrs = [...new Set(allyears)]
   months = [...new Set(allmonths)]
   dateall = [...new Set(alldates)]
-
-  console.log(months)
-
-  
+  townsall = [...new Set(alltowns)]
 
   //default values
-  resalepriceavg = avg(data, yrs, 'year', 'resale_price')
+  resaleyravg = avg(data, yrs, 'year', 'resale_price')
+  townresaleavg = avg(data, townsall, 'town', 'resale_price')
 
   // avgobject = {}
   // avgobject.year = yrs
   // avgobject.price = resalepriceavg
 
+  //check value in time filter
   function checktime(time) {
     if (time == 'year') {
       return window.yrs
@@ -102,6 +104,7 @@ let lineline
     }
   }
 
+  // check value in value filter
   function checkval(value, xaxis, timecol) {
     if (value == 'resale_price') {
 
@@ -136,6 +139,7 @@ let lineline
 
     console.log(xaxis, yaxis)
     updateline(xaxis, yaxis, ylabel)
+    updatebar(window.townsall, yaxis, ylabel)
   })
 
   // change time in filter
@@ -153,6 +157,7 @@ let lineline
 
     console.log(xaxis, yaxis)
     updateline(xaxis, yaxis, ylabel)
+    updatebar(window.townsall, yaxis, ylabel)
   })
 
   d3.interval(() => {
@@ -161,23 +166,26 @@ let lineline
     // update(newData) 
     
     update(data)
-  }, 1000)
+  }, 10000)
 
-  
-  // update(data)
-  createlinechart(window.yrs, window.resalepriceavg)
-  // linevalues = createlinechart(window.yrs, window.resalepriceavg)
-  // linex = linevalues[0]
-  // liney = linevalues[1]
-  // console.log(linevalues)
+
+  console.log(d3.max(window.townresaleavg))
+  createlinechart(window.yrs, window.resaleyravg)
+  createbarchart(window.townsall, window.townresaleavg)
 })
 
 
 
 function update(data) {
+  console.log('update all')
+
+  //default filters
+  document.getElementById('var-time-select').value = 'year'
+  document.getElementById('var-select').value = 'resale_price'
+
   //default charts 
-  
-  // updateline(window.yrs, window.resalepriceavg)
+  // updateline(window.yrs, window.resaleyravg, 'Avg Resale Price ($)')
+  updatebar(window.townsall, window.townresaleavg, 'Avg Resale Price ($)')
  
 }
 

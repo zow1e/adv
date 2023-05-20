@@ -8,8 +8,8 @@ function createlinechart(xaxis, yaxis) {
   console.log('linechart printing')
 
   const MARGIN = { LEFT: 80, RIGHT: 100, TOP: 50, BOTTOM: 40 }
-  const WIDTH = 700 - MARGIN.LEFT - MARGIN.RIGHT
-  const HEIGHT = 370 - MARGIN.TOP - MARGIN.BOTTOM
+  WIDTH = 700 - MARGIN.LEFT - MARGIN.RIGHT
+  HEIGHT = 370 - MARGIN.TOP - MARGIN.BOTTOM
     
   const svg = d3.select('#line-chart').append("svg")
     .attr("width", WIDTH + MARGIN.LEFT + MARGIN.RIGHT)
@@ -17,6 +17,8 @@ function createlinechart(xaxis, yaxis) {
 
   g = svg.append("g")
     .attr("transform", `translate(${MARGIN.LEFT}, ${MARGIN.TOP})`)
+
+  const bisectDate = d3.bisector(xaxis, d => d).left
   
       // // line chart
   ax = d3.scaleTime()
@@ -75,8 +77,9 @@ function updateline(xaxis, yaxis, ylabel) {
 
   ax.domain(d3.extent(xaxis))
   // x.domain(xaxis)
-  ay.domain([d3.min(yaxis), 
-            d3.max(yaxis)])
+  // ay.domain([d3.min(yaxis)/1.05,
+  ay.domain([0, 
+            d3.max(yaxis)*1.05])
 
   // const formatTime = d3.timeFormat("%b %Y")
 
@@ -87,8 +90,7 @@ function updateline(xaxis, yaxis, ylabel) {
   // .append("g")
   // .call(d3.axisBottom(ax).ticks(10).tickSizeInner(-HEIGHT))
       
-  const xAxisCall = d3.axisBottom()
-  .scale(ax)
+  const xAxisCall = d3.axisBottom(ax)
   .tickValues(xaxis)
   .tickFormat((d) => d)
   // .innerTickSize(-HEIGHT)
@@ -104,14 +106,14 @@ function updateline(xaxis, yaxis, ylabel) {
           
     
   const yAxisCall = d3.axisLeft(ay)
-    .ticks(5)
+    .ticks(6)
     .tickFormat(d => "$"+d)
     ayAxisGroup
     .transition(t)
     .call(yAxisCall) 
 
 
-  d3.selectAll("path.line").remove();
+  // d3.selectAll("path.line").remove();
 
       // draw line
   let line = d3.line()
@@ -130,18 +132,44 @@ function updateline(xaxis, yaxis, ylabel) {
     // .transition(t)
     .attr("d", line(xaxis))
 
-      // g.append("path")
-		  // .transition(t)
-      // // .datum(xaxis)
-      // .attr("class", "line")
-      // .attr("fill", "none")
-      // .attr("stroke", "blue")
-      // .attr("stroke-width", "3px")
-      // .attr("d", line(xaxis))
-
-    
-      // const flagtxt = flag ? "Avg Revenue ($)" : "Profit ($)"
   Ylabel.text(ylabel)
 
 
-  }
+  // //tooltip
+
+  // const tooltip = g.append('g')
+  // .attr('class', 'focus')
+  // .attr('display', 'none')
+
+  // tooltip.append('line')
+  // .attr('class', 'x-hover-line hover-line')
+  // .attr('y', HEIGHT)
+  // .attr('x', 0)
+
+  // tooltip.append('circle')
+  // .attr('r', 7)
+
+  // tooltip.append('text')
+  // .attr('x', 15)
+  // .attr('dy', '.31em')
+
+  // g.append('rect')
+  // .attr('class', 'overlay')
+  // .attr('x', WIDTH)
+  // .attr('y', HEIGHT)
+  // .on("mouseover", () => focus.style("display", null))
+	// 	.on("mouseout", () => focus.style("display", "none"))
+	// 	.on("mousemove", mousemove)
+
+	// function mousemove() {
+	// 	const x0 = ax.invert(d3.mouse(this)[0])
+	// 	const i = bisectDate(xaxis, x0, 1)
+	// 	const d0 = xaxis[i - 1]
+	// 	const d1 = xaxis[i]
+	// 	const d = x0 - d0 > d1 - x0 ? d1 : d0
+	// 	focus.attr("transform", `translate(${ax(d)}, ${(d, i) => ay(yaxis[i])})`)
+	// 	focus.select("text").text((d, i) => (yaxis[i]))
+	// 	focus.select(".x-hover-line").attr("y2",(d, i) => HEIGHT - ay(yaxis[i]))
+	// 	focus.select(".y-hover-line").attr("x2", (d, i) => -ax(yaxis[i]))
+  // }
+}

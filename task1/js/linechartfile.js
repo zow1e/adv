@@ -78,24 +78,22 @@ class LINECHART {
     wrangleData() {
       const vis = this
   
-      vis.variable = $("#var-select").val()
+      // vis.variable = $("#var-select").val()
       // vis.dayNest = d3.nest()
       //   .key(d => formatTime(d.date))
       //   .entries(calls)
+
+      vis.yearsgroup = d3.group(data, d => d.year)
   
-      // vis.dataFiltered = vis.dayNest
-      //   .map(day => day.values.reduce(
-      //     (accumulator, current) => {
-      //         accumulator.date = day.key
-      //         accumulator[current.team] = accumulator[current.team] + current[vis.variable]
-      //         return accumulator
-      //     }, {
-      //       "northeast": 0,
-      //       "midwest": 0,
-      //       "south": 0,
-      //       "west": 0
-      //     }
-      //   ))
+      vis.dataFiltered = yearsgroup.reduce(year => {
+        return {
+          year: year.key,
+          // size: (category.values.reduce((accumulator, current) => 
+          //   accumulator + current[vis.variable], 0) / category.values.length)
+          size: d3.rollup(yearsgroup, v => d3.mean(v, d => d.resale_price), d => d.year)
+        
+        }
+      })
   
       vis.updateVis()
     }
@@ -105,7 +103,7 @@ class LINECHART {
   
       vis.t = d3.transition().duration(750)
   
-      const value = flag ? "remainingyrs" : "resale_price"
+      vis.value = flag ? "remainingyrs" : "resale_price"
     
     
       vis.x.domain(d3.extent(yrs))
@@ -159,7 +157,7 @@ class LINECHART {
       .y((d, i) => y(resalepriceavg[i]))
     
       // add line to chart
-      g.append("path")
+      vis.g.append("path")
       .datum(yrs)
       .attr("class", "line")
       .attr("fill", "none")
@@ -172,37 +170,4 @@ class LINECHART {
        this.Ylabel.text(text)
     }
   
-    addLegend() {
-      const vis = this
-  
-      const legend = vis.g.append("g")
-        .attr("transform", "translate(50, -25)")
-  
-      const legendArray = [
-        { label: "Northeast", color: vis.color("northeast") },
-        { label: "West", color: vis.color("west") },
-        { label: "South", color: vis.color("south") },
-        { label: "Midwest", color: vis.color("midwest" )}
-      ]
-  
-      const legendCol = legend.selectAll(".legendCol")
-        .data(legendArray)
-        .enter().append("g")
-          .attr("class", "legendCol")
-          .attr("transform", (d, i) => `translate(${i * 100}, 0)`)
-          
-      legendCol.append("rect")
-        .attr("class", "legendRect")
-        .attr("width", 10)
-        .attr("height", 10)
-        .attr("fill", d => d.color)
-        .attr("fill-opacity", 0.5)
-  
-      legendCol.append("text")
-        .attr("class", "legendText")
-        .attr("x", 20)
-        .attr("y", 10)
-        .attr("text-anchor", "start")
-        .text(d => d.label)
-    }
 }

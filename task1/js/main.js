@@ -35,9 +35,13 @@ d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
 
 
   })
-
-    //   groups
+    // //   groups
     yearsgroup = d3.group(data, d => d.year)
+    // yearsgroup.forEach(d => {
+    //   d.avg_rp = d3.mean(d.values, p => p.resale_price) 
+    // })
+
+    // console.log(yearsgroup)
     monthsgroup = d3.group(data, d => d.month)
     datesgroup = d3.group(data, d => d.date)
     townsgroup = d3.group(data, d => d.town)
@@ -53,6 +57,7 @@ d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
     span1.textContent = d3.min(datesall)
     span2 = document.getElementById('dateLabel2')
     span2.textContent = d3.max(datesall)
+
     
 
     //default values
@@ -64,7 +69,7 @@ d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
 
     resaleyravg = calcAverage.avg('resale_price', 'year')
     townresaleavg = calcAverage.avg('resale_price', 'town')
-
+    
 
   d3.interval(() => {
     
@@ -72,7 +77,6 @@ d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
   }, 10000)
 
   createlinechart(yrsall, resaleyravg)
-
   createbarchart(townsall, townresaleavg)
 })
 

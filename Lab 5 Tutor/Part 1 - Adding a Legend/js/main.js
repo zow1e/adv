@@ -68,6 +68,29 @@ g.append("g")
 	.call(yAxisCall)
 
 
+const continents = ['europe', 'asia', 'americas', 'africa']
+
+const legend = g.append('g')
+.attr("transform", `translate(${WIDTH-100}, ${HEIGHT-150})`)
+
+continents.forEach((data, i) => {
+	const legendRow = legend.append('g')
+	.attr("transform", `translate(0, ${i*20})`)
+
+	legendRow.append('rect')
+	.attr('width', 10)
+	.attr('height', 10)
+	.attr('fill', continentColor(data))
+
+	legendRow.append('text')
+	.attr('y', 10)
+	.attr('x', 20)
+	.attr('text-anchor', 'start')
+	.style('text-transform', 'capitalise')
+	.text(data)
+})
+
+
 
 d3.json("data/data.json").then(function(data){
 	// clean data
@@ -81,6 +104,8 @@ d3.json("data/data.json").then(function(data){
 			return country
 		})
 	})
+
+	console.log(data)
 
 	// run the code every 0.1 second
 	d3.interval(function(){

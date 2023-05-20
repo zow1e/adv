@@ -146,11 +146,13 @@ function updatebar(xaxis, yaxis, ylabel) {
         //add new bars
     rects.enter().append("rect")
         .attr("class", "enter")
-        .attr("y", (d, i) => y(yaxis[i]))
-        .attr("height", (d, i) => HEIGHT - y(yaxis[i]))
+        .attr("y", y(0))
         .attr("x", d => x(d))
         .attr("width", x.bandwidth)
         .attr("fill", "green")
+        .transition(t)
+        .attr("y", (d, i) => y(yaxis[i]))
+        .attr("height", (d, i) => HEIGHT - y(yaxis[i]))
 
         .on("mouseover", function(d){tooltip.text((d, i) => y(yaxis[i])); return tooltip.style("visibility", "visible");})
       .on("mousemove", function(){return tooltip.style("top", (d3.event.pageY-10)+"px").style("left",(d3.event.pageX+10)+"px");})

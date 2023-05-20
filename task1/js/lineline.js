@@ -129,7 +129,7 @@ function updateline(xaxis, yaxis, ylabel) {
     .attr("fill", "none")
     .attr("stroke", "blue")
     .attr("stroke-width", "3px")
-    // .transition(t)
+    .transition(t)
     .attr("d", line(xaxis))
 
   Ylabel.text(ylabel)

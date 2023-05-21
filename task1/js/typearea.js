@@ -56,7 +56,7 @@ function createtypeareachart(xaxis, yaxis) {
   
     // const addLegend()
   
-    updatetypearea(xaxis, yaxis, 'Avg Floor Area (Sqm)')
+    updatetypearea(xaxis, yaxis, 'Avg Resale Price ($)')
   
   }
         

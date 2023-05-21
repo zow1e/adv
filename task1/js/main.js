@@ -17,8 +17,8 @@ monthNames = [ "January", "February", "March", "April", "May", "June",
 // let barfile
 
 
-d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
-// d3.csv("data/small.csv").then(data => {
+// d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
+d3.csv("data/small.csv").then(data => {
   data.forEach(d => {
     d.block = Number(d.block)
     d.floor_area_sqm = Number(d.floor_area_sqm)
@@ -33,19 +33,16 @@ d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
 
     d.remainingyrs = d.year - d.lease_commence_date
 
-
   })
     // //   groups
     yearsgroup = d3.group(data, d => d.year)
-    // yearsgroup.forEach(d => {
-    //   d.avg_rp = d3.mean(d.values, p => p.resale_price) 
-    // })
-
     monthsgroup = d3.group(data, d => d.month)
     datesgroup = d3.group(data, d => d.date)
     townsgroup = d3.group(data, d => d.town)
 
     typegroup = d3.group(data, d => d.flat_type)
+
+	flattowngroup = d3.group(data, d => d.town, d => d.flat_type)
 
     //lists
     yrsall = Array.from(yearsgroup.keys()) // all years in dataset
@@ -54,7 +51,6 @@ d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
     townsall = Array.from(townsgroup.keys())
 
     flattypeall = Array.from(typegroup.keys())
-    // flattypeall = d3.groupSort(data, g => d3.mean(g, d => d.floor_area_sqm), d => d.flat_type)
 
     // set value of date range
     span1 = document.getElementById('dateLabel1')
@@ -62,29 +58,26 @@ d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
     span2 = document.getElementById('dateLabel2')
     span2.textContent = d3.max(datesall)
 
-    
-
     //default values
     calcAverage = {avg(value, time) {
         rolled = d3.rollup(data, v => d3.mean(v, d => d[value]), d => d[time])
-        console.log(rolled)
         arrayofvals = Array.from(rolled.values())
         return arrayofvals
     }}
 
     resaleyravg = calcAverage.avg('resale_price', 'year')
     townresaleavg = calcAverage.avg('resale_price', 'town')
-    flattypearea = calcAverage.avg('floor_area_sqm', 'flat_type')
-    
+    flattypeavg= calcAverage.avg('resale_price', 'flat_type')
 
   d3.interval(() => {
     
-    update()
+    update(data)
   }, 10000)
 
   createlinechart(yrsall, resaleyravg)
   createbarchart(townsall, townresaleavg)
-  createtypeareachart(flattypeall, flattypearea)
+  createtypeareachart(flattypeall, flattypeavg)
+  createscatter(data)
 })
 
 
@@ -105,21 +98,16 @@ function checktime(time) {
   // check value in value filter
 function checkval(value, xaxis, timecol) {
     if (value == 'resale_price') {
-
-      // console.log('checking value', value)
-      
       resaleavg = calcAverage.avg(value, timecol)
       label = 'Avg Resale Price ($)'
       return [resaleavg, label]
       
     }
-    // else if (time == 'month'){
-    //   resalepriceavg = avg(data, yrs, 'year', 'resale_price')
-    //   return updateline(time, resalepriceavg)
-    // }
-    // else {
-    //   updateline(window.dateall, value)
-    // }
+    else if (value == 'floor_area_sqm'){
+		valavg = calcAverage.avg(value, timecol)
+		label = 'Avg Floor Area (Sqm)'
+		return [valavg, label]
+    }
   }
 
   // change value in filter
@@ -140,6 +128,11 @@ $("#var-select").on("change", () => {
     yaxis = valuecheck[0]
     ylabel = valuecheck[1]
     updatebar(townsall, yaxis, ylabel)
+
+	valuecheck = checkval(value, xaxis, 'flat_type')
+    yaxis = valuecheck[0]
+    ylabel = valuecheck[1]
+    updatetypearea(townsall, yaxis, ylabel)
   })
 
   // change time in filter
@@ -155,13 +148,13 @@ $("#var-time-select").on("change", () => {
     yaxis = valuecheck[0]
     ylabel = valuecheck[1]
 
-    console.log('change time', xaxis)
+    console.log('change time', yaxis)
     updateline(xaxis, yaxis, ylabel)
   })
 
 
 
-function update() {
+function update(data) {
   console.log('update all')
 
   //default filters
@@ -174,8 +167,9 @@ function update() {
 
   updatebar(townsall, townresaleavg, 'Avg Resale Price ($)')
 
-  updatetypearea(flattypeall, flattypearea, 'Avg Floor Area (Sqm)')
+  updatetypearea(flattypeall, flattypearea, 'Avg Resale Price ($)')
   
+  updatescatter(data, 'Resale Price ($)')
  
 }
 

@@ -53,7 +53,7 @@ function createlinechart(xaxis, yaxis) {
     .text("Year")
 
     // Y label
-  Ylabel = g.append("text")
+  aYlabel = g.append("text")
     .attr("class", "y axis-label")
     .attr("x", - (HEIGHT / 2))
     .attr("y", -60)
@@ -69,6 +69,7 @@ function createlinechart(xaxis, yaxis) {
 function updateline(xaxis, yaxis, ylabel) {
 
   console.log('updating line')
+  console.log(ylabel)
 
 
   const t = d3.transition().duration(600)
@@ -113,7 +114,7 @@ function updateline(xaxis, yaxis, ylabel) {
     .call(yAxisCall) 
 
 
-  // d3.selectAll("path.line").remove();
+  d3.selectAll("path.line").remove();
 
       // draw line
   let line = d3.line()
@@ -132,7 +133,7 @@ function updateline(xaxis, yaxis, ylabel) {
     .transition(t)
     .attr("d", line(xaxis))
 
-  Ylabel.text(ylabel)
+  aYlabel.text(ylabel)
 
 
   // //tooltip

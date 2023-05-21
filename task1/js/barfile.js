@@ -45,7 +45,7 @@ function createbarchart(xaxis, yaxis) {
     .attr("text-anchor", "middle")
 
   // Y label
-  Ylabel = bg.append("text")
+  bYlabel = bg.append("text")
     .attr("class", "y axis-label")
     .attr("x", - (HEIGHT / 2))
     .attr("y", -60)
@@ -149,17 +149,33 @@ function updatebar(xaxis, yaxis, ylabel) {
         .attr("y", y(0))
         .attr("x", d => x(d))
         .attr("width", x.bandwidth)
-        .attr("fill", "mediumseagreen")
+        .attr("fill", "mediumseagreen") 
+        // .on("click", drill)
+        // .style("height", function(d) {
+            // return d + "px"})
         .transition(t)
         .attr("y", (d, i) => y(yaxis[i]))
         .attr("height", (d, i) => HEIGHT - y(yaxis[i]))
+
+        // .addEventListener("mouseover", function (actual, i) {
+
+        // .on('click', function (actual, i) {
+        //   d3.selectAll('.value')
+        //     .attr('opacity', 0)
+  
+        //   d3.select(this)
+        //     .transition()
+        //     .duration(300)
+        //     .attr('opacity', 0.6)
+        //     .attr('x', (a) => x(a.language) - 5)
+        //     .attr('width', xScale.bandwidth() + 10) })
 
       //   .on("mouseover", function(d){tooltip.text((d, i) => y(yaxis[i])); return tooltip.style("visibility", "visible");})
       // .on("mousemove", function(){return tooltip.style("top", (d3.event.pageY-10)+"px").style("left",(d3.event.pageX+10)+"px");})
       // .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
     
     
-        Ylabel.text(ylabel)
+    bYlabel.text(ylabel)
       
         // addLegend() {
         //   const vis = this

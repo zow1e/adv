@@ -13,12 +13,12 @@ monthNames = [ "January", "February", "March", "April", "May", "June",
 
 
 // import chart files
-let lineline
-let barfile
+// let lineline
+// let barfile
 
 
-// d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
-d3.csv("data/small.csv").then(data => {
+d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
+// d3.csv("data/small.csv").then(data => {
   data.forEach(d => {
     d.block = Number(d.block)
     d.floor_area_sqm = Number(d.floor_area_sqm)
@@ -41,16 +41,20 @@ d3.csv("data/small.csv").then(data => {
     //   d.avg_rp = d3.mean(d.values, p => p.resale_price) 
     // })
 
-    // console.log(yearsgroup)
     monthsgroup = d3.group(data, d => d.month)
     datesgroup = d3.group(data, d => d.date)
     townsgroup = d3.group(data, d => d.town)
 
-    //date lists
+    typegroup = d3.group(data, d => d.flat_type)
+
+    //lists
     yrsall = Array.from(yearsgroup.keys()) // all years in dataset
     monthsall = Array.from(monthsgroup.keys())
     datesall = Array.from(datesgroup.keys())
     townsall = Array.from(townsgroup.keys())
+
+    flattypeall = Array.from(typegroup.keys())
+    // flattypeall = d3.groupSort(data, g => d3.mean(g, d => d.floor_area_sqm), d => d.flat_type)
 
     // set value of date range
     span1 = document.getElementById('dateLabel1')
@@ -63,12 +67,14 @@ d3.csv("data/small.csv").then(data => {
     //default values
     calcAverage = {avg(value, time) {
         rolled = d3.rollup(data, v => d3.mean(v, d => d[value]), d => d[time])
+        console.log(rolled)
         arrayofvals = Array.from(rolled.values())
         return arrayofvals
     }}
 
     resaleyravg = calcAverage.avg('resale_price', 'year')
     townresaleavg = calcAverage.avg('resale_price', 'town')
+    flattypearea = calcAverage.avg('floor_area_sqm', 'flat_type')
     
 
   d3.interval(() => {
@@ -78,6 +84,7 @@ d3.csv("data/small.csv").then(data => {
 
   createlinechart(yrsall, resaleyravg)
   createbarchart(townsall, townresaleavg)
+  createtypeareachart(flattypeall, flattypearea)
 })
 
 
@@ -163,11 +170,11 @@ function update() {
   
 
   //default charts 
-  console.log(yrsall)
   updateline(yrsall, resaleyravg, 'Avg Resale Price ($)')
 
-  console.log(townsall)
   updatebar(townsall, townresaleavg, 'Avg Resale Price ($)')
+
+  updatetypearea(flattypeall, flattypearea, 'Avg Floor Area (Sqm)')
   
  
 }

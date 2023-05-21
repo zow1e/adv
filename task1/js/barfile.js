@@ -149,14 +149,14 @@ function updatebar(xaxis, yaxis, ylabel) {
         .attr("y", y(0))
         .attr("x", d => x(d))
         .attr("width", x.bandwidth)
-        .attr("fill", "green")
+        .attr("fill", "mediumseagreen")
         .transition(t)
         .attr("y", (d, i) => y(yaxis[i]))
         .attr("height", (d, i) => HEIGHT - y(yaxis[i]))
 
-        .on("mouseover", function(d){tooltip.text((d, i) => y(yaxis[i])); return tooltip.style("visibility", "visible");})
-      .on("mousemove", function(){return tooltip.style("top", (d3.event.pageY-10)+"px").style("left",(d3.event.pageX+10)+"px");})
-      .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
+      //   .on("mouseover", function(d){tooltip.text((d, i) => y(yaxis[i])); return tooltip.style("visibility", "visible");})
+      // .on("mousemove", function(){return tooltip.style("top", (d3.event.pageY-10)+"px").style("left",(d3.event.pageX+10)+"px");})
+      // .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
     
     
         Ylabel.text(ylabel)

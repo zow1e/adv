@@ -14,17 +14,17 @@
 	
 </head>
 <body>
-	<nav class="navbar navbar-light bg-light">
+	<!-- <nav class="navbar navbar-light bg-light">
 		<div class="container">
 			  <h3>4 charts with filter</h3>
 		</div>
-	</nav>
+	</nav> -->
 
 	<!-- Bootstrap grid setup -->
-	<div class="container">
+	<div class="container" style="margin-top: 10px; margin-left: 200px;">
 		<div class="row">
 			<!-- charts on left side -->
-			<div id="left-charts" class="col-sm-12 col-md-8">
+			<div id="left-charts" class="col-sm-8 col-md-7">
 				<div class="row">
 					<div class="col-md-7">
 						<label>Dates: <span id="dateLabel1"></span> to <span id="dateLabel2"></span></label>
@@ -34,7 +34,7 @@
 					<div class="col-md-4">
 						<select id="var-select" class="form-control">
 							<option selected value="resale_price">Resale Price (USD)</option>
-							<option value="call_duration">Call Time (seconds)</option>
+							<option value="floor_area_sqm">Floor Area (seconds)</option>
 							<option value="units_sold">Units Sold</option>
 						</select>
 					</div>  
@@ -54,7 +54,7 @@
 			<!-- charts on right side -->
 			<div id="right-charts" class="col-md-4 col-sm-12">
 				<div class="row">
-					<div class="col-sm-6 col-md-12" id="company-size"></div>
+					<div class="col-sm-6 col-md-12" id="type-area"></div>
 					<div class="col-sm-6 col-md-12" id="units-sold"></div>                    
 					<div class="col-sm-6 col-md-12" id="revenue"></div>
 					<div class="col-sm-6 col-md-12" id="call-duration"></div>                    
@@ -78,6 +78,8 @@
 	
 	<script src="js/barfile.js"></script>
 	<script src="js/lineline.js"></script>
+
+	<script src="js/typearea.js"></script>
 
 	<script src="js/main.js"></script>
 

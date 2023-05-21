@@ -69,7 +69,6 @@ function createlinechart(xaxis, yaxis) {
 function updateline(xaxis, yaxis, ylabel) {
 
   console.log('updating line')
-  console.log(ylabel)
 
 
   const t = d3.transition().duration(600)
@@ -121,9 +120,6 @@ function updateline(xaxis, yaxis, ylabel) {
     .x(d => ax(d))
     .y((d, i) => ay(yaxis[i]))
     
-
-      // line
-  console.log('line wrong conversion',yaxis)
 
   g.append("path")
     .attr("class", "line")

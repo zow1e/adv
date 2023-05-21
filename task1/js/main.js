@@ -17,8 +17,8 @@ monthNames = [ "January", "February", "March", "April", "May", "June",
 // let barfile
 
 
-// d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
-d3.csv("data/small.csv").then(data => {
+d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
+// d3.csv("data/small.csv").then(data => {
   data.forEach(d => {
     d.block = Number(d.block)
     d.floor_area_sqm = Number(d.floor_area_sqm)
@@ -69,15 +69,37 @@ d3.csv("data/small.csv").then(data => {
     townresaleavg = calcAverage.avg('resale_price', 'town')
     flattypeavg= calcAverage.avg('resale_price', 'flat_type')
 
+    // Group the data by town and flat model
+const groupedData = d3.group(data, d => d.town, d => d.flat_model);
+
+flatModels = d3.group(data, d => d.flat_model)
+
+// Calculate the count of units for each combination of town, flat model, and price range
+const stackedData = Array.from(groupedData, ([town, flatModels]) => {
+  const counts = Array.from(flatModels, ([flatModel, values]) => {
+    const priceRangeCounts = d3.rollups(values, v => v.length, d => d.resale_price_range);
+    return { flatModel, priceRangeCounts };
+  });
+  return { town, counts };
+});
+    console.log(stackedData)
+
   d3.interval(() => {
     
     update(data)
   }, 10000)
 
   createlinechart(yrsall, resaleyravg)
+
+  // create histogram + stacked barchart
   createbarchart(townsall, townresaleavg)
+
+  // change to boxplot?
   createtypeareachart(flattypeall, flattypeavg)
-  createscatter(data)
+
+  //
+  // createstacked(stackedData, flatModels)
+  createstacked(stackedData)
 })
 
 
@@ -132,7 +154,7 @@ $("#var-select").on("change", () => {
 	valuecheck = checkval(value, xaxis, 'flat_type')
     yaxis = valuecheck[0]
     ylabel = valuecheck[1]
-    updatetypearea(townsall, yaxis, ylabel)
+    updatetypearea(flattypeall, yaxis, ylabel)
   })
 
   // change time in filter
@@ -167,9 +189,10 @@ function update(data) {
 
   updatebar(townsall, townresaleavg, 'Avg Resale Price ($)')
 
-  updatetypearea(flattypeall, flattypearea, 'Avg Resale Price ($)')
-  
-  updatescatter(data, 'Resale Price ($)')
+  updatetypearea(flattypeall, flattypeavg, 'Avg Resale Price ($)')
+
+  updatestacked(stackedData, 'Count')
+
  
 }
 

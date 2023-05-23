@@ -33,13 +33,8 @@ function createstacked(data) {
     kyAxisGroup = kg.append("g")
       .attr("class", "y axis")
 
-        // Define the range of colors for the color scale
-    // const colorRange = ["#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FF00FF", "#00FFFF"];
-    const colorRange = d3.schemeCategory10
-
-    // Create the color scale using d3.scaleOrdinal
     colorScale = d3.scaleOrdinal()
-    .range(colorRange)
+    .range(d3.schemeCategory10)
             
       
     // X label
@@ -67,36 +62,34 @@ function createstacked(data) {
   function updatestacked(data, ylabel) {
       
     console.log('updating stacked')
-        // console.log(xaxis)
   
-  
-        // const dayNest = d3.nest()
-        //   .key(d => formatTime(d.date))
-        //   .entries(calls)
+    // aggregate and simplify data
+
+    const aggregatedData = d3.rollup(
+      data,
+      v => v.length,
+      d => d.town,
+      d => d.flat_model
+    )
+    console.log(aggregatedData)
     
-        // const dataFiltered = const dayNest
-        //   .map(day => day.values.reduce(
-        //     (accumulator, current) => {
-        //         accumulator.date = day.key
-        //         accumulator[current.team] = accumulator[current.team] + current[const variable]
-        //         return accumulator
-        //     }, {
-        //       "northeast": 0,
-        //       "midwest": 0,
-        //       "south": 0,
-        //       "west": 0
-        //     }
-        //   ))
+    // simplify
+    const chartData = Array.from(aggregatedData, ([town, models]) => ({
+      town, models: Array.from(models, ([model, count]) => ({ model, count })),
+    }))
     
+    console.log(chartData[0].models[0].count)
     
+    keys = Array.from(new Set(data.map((d) => d.flat_model)));
     
     const t = d3.transition().duration(600)
   
-    kxScale.domain(data.map(d => d.town))
-    kyScale.domain([0, d3.max(data, d => d3.sum(d.counts, c => d3.sum(c.priceRangeCounts, pr => pr[1])))])
+    kxScale.domain(chartData.map(d => d.town))
+    // kyScale.domain([0, d3.max(chartData, d => d3.sum(keys, k => d[k]))])
+    kyScale.domain([0, d3.max(chartData, d => d3.sum(d.models, (m) => m.count))])
+    // colorScale.domain(keys)
+    colorScale.domain(chartData[0].models.map((d) => d.model))
 
-    
-    // colorScale.domain(flatModels)
     
     const xAxisCall = d3.axisBottom(kxScale)  
   
@@ -125,55 +118,79 @@ function createstacked(data) {
         .style("background", "#000")
         .text("a simple tooltip");
   
-  
-          // draw bars
-    // const rects = kg.selectAll("rect")
-    //   .data(xaxis)
-      
-    //   // delete gone bars
-    //   rects.exit()
-    //       .attr("class", "exit")
-    //       .transition(t)
-    //       .attr("height", 0)
-    //       .attr("y", HEIGHT)
-    //       .style("fill-opacity", "0.1")
-    //       .remove()
-  
-        //update repeat bars
-        const townBars = kg.selectAll(".town-bar")
-        .data(data)
-        .enter()
-        .append("g")
-        .attr("class", "town-bar")
-        .attr("transform", d => `translate(${kxScale(d.town)}, 0)`);
-    
-    townBars.selectAll("rect")
-        .data(d => d.counts)
-        .enter()
-        .append("rect")
-        .attr("x", 0)
-        .attr("y", d => kyScale(d3.sum(d.priceRangeCounts, pr => pr[1])))
-        .attr("width", kxScale.bandwidth())
-        .attr("height", d => kyScale(0) - kyScale(d3.sum(d.priceRangeCounts, pr => pr[1])))
-        .attr("fill", (d, i) => colorScale(i));
-  
-          // .addEventListener("mouseover", function (actual, i) {
-  
-          // .on('click', function (actual, i) {
-          //   d3.selectAll('.value')
-          //     .attr('opacity', 0)
-    
-          //   d3.select(this)
-          //     .transition()
-          //     .duration(300)
-          //     .attr('opacity', 0.6)
-          //     .attr('x', (a) => x(a.language) - 5)
-          //     .attr('width', xScale.bandwidth() + 10) })
-  
-        //   .on("mouseover", function(d){tooltip.text((d, i) => y(yaxis[i])); return tooltip.style("visibility", "visible");})
-        // .on("mousemove", function(){return tooltip.style("top", (d3.event.pageY-10)+"px").style("left",(d3.event.pageX+10)+"px");})
-        // .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
-      
+  console.log(keys)
+  // Create the stacked bars
+  const barGroups = kg.selectAll('.bar-group')
+  .selectAll('.bar-group')
+  .data(
+    d3.stack().keys(keys)(chartData.map((d) => d.models)),d => d.key
+  )
+  .join(
+    (exit) =>
+      exit
+        .selectAll('rect')
+        .data((d) => d, (data, i) => data.data.town + data.key + i)
+        .join('rect')
+        .attr('x', (d) => kxScale(d.data.town))
+        .attr('y', HEIGHT)
+        .attr('height', 0)
+        .attr('width', kxScale.bandwidth())
+        .attr('fill', (d) => colorScale(d.key))
+        .call((exit) =>
+          exit
+            .transition(t)
+            .duration(500)
+            .attr('y', HEIGHT)
+            .attr('height', 0)
+            .remove()
+        ),
+    (update) =>
+      update
+        .selectAll('rect')
+        .data((d) => d, (data, i) => data.data.town + data.key + i)
+        .join('rect')
+        .attr('x', (d) => kxScale(d.data.town))
+        .attr('y', (d) => kyScale(d[1]))
+        .attr('height', (d) => kyScale(d[0]) - kyScale(d[1]))
+        .attr('width', kxScale.bandwidth()),
+    (enter) =>
+      enter
+        .append('g')
+        .attr('class', 'bar-group')
+        .attr('fill', (d) => colorScale(d.key))
+        .selectAll('rect')
+        .data((d) => d, (data, i) => data.data.town + data.key + i)
+        .join('rect')
+        .attr('x', (d) => kxScale(d.data.town))
+        .attr('y', (d) => kyScale(d[0]))
+        .attr('height', (d) => kyScale(d[1]) - kyScale(d[0]))
+        .attr('width', kxScale.bandwidth())
+        .call((enter) =>
+          enter
+            .transition(t)
+            .attr('y', (d) => kyScale(d[1]))
+            .attr('height', (d) => kyScale(d[0]) - kyScale(d[1]))
+        )
+  )
+
+  console.log(chartData[0].models)
+
+  // const bars = kg
+  //       .selectAll('g')
+  //       .data(chartData)
+  //       .enter()
+  //       .append('g')
+  //       .attr('transform', (d) => `translate(${kxScale(d.town)},0)`)
+  //       .selectAll('rect')
+  //       .data((d) => d.models)
+  //       .enter()
+  //       .append('rect')
+  //       .attr('x', (d) => kxScale.bandwidth() / 4)
+  //       .attr('y', (d) => kyScale(d3.sum(d.models.slice(0, d.index), (m) => m.count)))
+  //       .attr('width', kxScale.bandwidth() / 2)
+  //       .attr('height', (d) => kyScale(d.count) - kyScale(0))
+  //       .attr('fill', (d) => color(d.model));
+
       
       kYlabel.text(ylabel)
 
@@ -183,7 +200,7 @@ function createstacked(data) {
 
     function addLegend() {
 
-        const flatModels = ["Improved", "New Generation", "Executive", "Maisonette"]
+        const flatModels = keys
             
         const legend = kg.append("g")
         .attr("class", "legend")

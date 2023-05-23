@@ -17,8 +17,8 @@ monthNames = [ "January", "February", "March", "April", "May", "June",
 // let barfile
 
 
-d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
-// d3.csv("data/small.csv").then(data => {
+// d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
+d3.csv("data/small.csv").then(data => {
   data.forEach(d => {
     d.block = Number(d.block)
     d.floor_area_sqm = Number(d.floor_area_sqm)
@@ -41,8 +41,9 @@ d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
     townsgroup = d3.group(data, d => d.town)
 
     typegroup = d3.group(data, d => d.flat_type)
+    // modelgroup = d3.group(data, d => d.flat_model)
 
-	flattowngroup = d3.group(data, d => d.town, d => d.flat_type)
+	// flattowngroup = d3.group(data, d => d.town, d => d.flat_type)
 
     //lists
     yrsall = Array.from(yearsgroup.keys()) // all years in dataset
@@ -51,6 +52,8 @@ d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
     townsall = Array.from(townsgroup.keys())
 
     flattypeall = Array.from(typegroup.keys())
+    // flatmodelall = Array.from(modelgroup.keys())
+    
 
     // set value of date range
     span1 = document.getElementById('dateLabel1')
@@ -69,20 +72,7 @@ d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
     townresaleavg = calcAverage.avg('resale_price', 'town')
     flattypeavg= calcAverage.avg('resale_price', 'flat_type')
 
-    // Group the data by town and flat model
-const groupedData = d3.group(data, d => d.town, d => d.flat_model);
 
-flatModels = d3.group(data, d => d.flat_model)
-
-// Calculate the count of units for each combination of town, flat model, and price range
-const stackedData = Array.from(groupedData, ([town, flatModels]) => {
-  const counts = Array.from(flatModels, ([flatModel, values]) => {
-    const priceRangeCounts = d3.rollups(values, v => v.length, d => d.resale_price_range);
-    return { flatModel, priceRangeCounts };
-  });
-  return { town, counts };
-});
-    console.log(stackedData)
 
   d3.interval(() => {
     
@@ -97,9 +87,7 @@ const stackedData = Array.from(groupedData, ([town, flatModels]) => {
   // change to boxplot?
   createtypeareachart(flattypeall, flattypeavg)
 
-  //
-  // createstacked(stackedData, flatModels)
-  createstacked(stackedData)
+  createstacked(data)
 })
 
 
@@ -191,7 +179,7 @@ function update(data) {
 
   updatetypearea(flattypeall, flattypeavg, 'Avg Resale Price ($)')
 
-  updatestacked(stackedData, 'Count')
+  updatestacked(data, 'Count')
 
  
 }

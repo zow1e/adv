@@ -17,8 +17,8 @@ monthNames = [ "January", "February", "March", "April", "May", "June",
 // let barfile
 
 
-// d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
-d3.csv("data/small.csv").then(data => {
+d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
+// d3.csv("data/small.csv").then(data => {
   data.forEach(d => {
     d.block = Number(d.block)
     d.floor_area_sqm = Number(d.floor_area_sqm)
@@ -41,7 +41,7 @@ d3.csv("data/small.csv").then(data => {
     townsgroup = d3.group(data, d => d.town)
 
     typegroup = d3.group(data, d => d.flat_type)
-    // modelgroup = d3.group(data, d => d.flat_model)
+    modelgroup = d3.group(data, d => d.flat_model)
 
 	// flattowngroup = d3.group(data, d => d.town, d => d.flat_type)
 
@@ -70,13 +70,13 @@ d3.csv("data/small.csv").then(data => {
 
     resaleyravg = calcAverage.avg('resale_price', 'year')
     townresaleavg = calcAverage.avg('resale_price', 'town')
-    flattypeavg= calcAverage.avg('resale_price', 'flat_type')
+    flattypeavg= calcAverage.avg('resale_price', 'flat_model')
 
 
 
   d3.interval(() => {
     
-    update(data)
+    // update(data)
   }, 10000)
 
   createlinechart(yrsall, resaleyravg)
@@ -85,9 +85,12 @@ d3.csv("data/small.csv").then(data => {
   createbarchart(townsall, townresaleavg)
 
   // change to boxplot?
-  createtypeareachart(flattypeall, flattypeavg)
+  // createtypeareachart(flattypeall, flattypeavg)
+  createtypeareachart(modelgroup, flattypeavg)
 
   createstacked(data)
+
+  createtypepie(data)
 })
 
 
@@ -100,7 +103,7 @@ function checktime(time) {
       return monthsall
     }
     else {
-        console.log(datesall)
+        // console.log(datesall)
       return datesall
     }
   }
@@ -158,7 +161,7 @@ $("#var-time-select").on("change", () => {
     yaxis = valuecheck[0]
     ylabel = valuecheck[1]
 
-    console.log('change time', yaxis)
+    // console.log('change time', yaxis)
     updateline(xaxis, yaxis, ylabel)
   })
 
@@ -177,9 +180,12 @@ function update(data) {
 
   updatebar(townsall, townresaleavg, 'Avg Resale Price ($)')
 
-  updatetypearea(flattypeall, flattypeavg, 'Avg Resale Price ($)')
+  updatetypearea(modelgroup, flattypeavg, 'Avg Resale Price ($)')
 
   updatestacked(data, 'Count')
+
+  updatetypepie
+  
 
  
 }

@@ -55,6 +55,7 @@ function createstacked(data) {
       .attr("transform", "rotate(-90)")
   
     updatestacked(data, 'Count')
+    addLegend()
   
   }
         
@@ -69,18 +70,18 @@ function createstacked(data) {
       data,
       v => v.length,
       d => d.town,
-      d => d.flat_model
+      d => d.flat_type
     )
-    console.log(aggregatedData)
+    // console.log(aggregatedData)
     
     // simplify
     const chartData = Array.from(aggregatedData, ([town, models]) => ({
       town, models: Array.from(models, ([model, count]) => ({ model, count })),
     }))
     
-    console.log(chartData[0].models[0].count)
+    // console.log(chartData[0].models[0].count)
     
-    keys = Array.from(new Set(data.map((d) => d.flat_model)));
+    keys = Array.from(new Set(data.map((d) => d.flat_type)));
     
     const t = d3.transition().duration(600)
   
@@ -118,7 +119,7 @@ function createstacked(data) {
         .style("background", "#000")
         .text("a simple tooltip");
   
-  console.log(keys)
+  // console.log(keys)
   // Create the stacked bars
   const barGroups = kg.selectAll('.bar-group')
   .selectAll('.bar-group')
@@ -173,7 +174,7 @@ function createstacked(data) {
         )
   )
 
-  console.log(chartData[0].models)
+  // console.log(chartData[0].models)
 
   // const bars = kg
   //       .selectAll('g')
@@ -192,9 +193,9 @@ function createstacked(data) {
   //       .attr('fill', (d) => color(d.model));
 
       
-      kYlabel.text(ylabel)
+      kYlabel.text(ylabel)  
 
-      addLegend()
+      // addLegend()
 
         }
 

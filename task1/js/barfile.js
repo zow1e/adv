@@ -64,7 +64,6 @@ function createbarchart(xaxis, yaxis) {
 function updatebar(xaxis, yaxis, ylabel) {
     
   console.log('updating bar')
-      // console.log(xaxis)
 
 
       // const dayNest = d3.nest()
@@ -177,39 +176,6 @@ function updatebar(xaxis, yaxis, ylabel) {
     
     bYlabel.text(ylabel)
       
-        // addLegend() {
-        //   const vis = this
-      
-        //   const legend = g.append("g")
-        //     .attr("transform", "translate(50, -25)")
-      
-        //   const legendArray = [
-        //     { label: "Northeast", color: color("northeast") },
-        //     { label: "West", color: color("west") },
-        //     { label: "South", color: color("south") },
-        //     { label: "Midwest", color: color("midwest" )}
-        //   ]
-      
-        //   const legendCol = legend.selectAll(".legendCol")
-        //     .data(legendArray)
-        //     .enter().append("g")
-        //       .attr("class", "legendCol")
-        //       .attr("transform", (d, i) => `translate(${i * 100}, 0)`)
-              
-        //   legendCol.append("rect")
-        //     .attr("class", "legendRect")
-        //     .attr("width", 10)
-        //     .attr("height", 10)
-        //     .attr("fill", d => d.color)
-        //     .attr("fill-opacity", 0.5)
-      
-        //   legendCol.append("text")
-        //     .attr("class", "legendText")
-        //     .attr("x", 20)
-        //     .attr("y", 10)
-        //     .attr("text-anchor", "start")
-        //     .text(d => d.label)
-        // };
-    
+
       }
     

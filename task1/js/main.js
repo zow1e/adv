@@ -17,8 +17,8 @@ monthNames = [ "January", "February", "March", "April", "May", "June",
 // let barfile
 
 
-d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
-// d3.csv("data/small.csv").then(data => {
+// d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
+d3.csv("data/small.csv").then(data => {
   data.forEach(d => {
     d.block = Number(d.block)
     d.floor_area_sqm = Number(d.floor_area_sqm)
@@ -52,7 +52,7 @@ d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
     townsall = Array.from(townsgroup.keys())
 
     flattypeall = Array.from(typegroup.keys())
-    // flatmodelall = Array.from(modelgroup.keys())
+    flatmodelall = Array.from(modelgroup.keys())
     
 
     // set value of date range
@@ -76,7 +76,7 @@ d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
 
   d3.interval(() => {
     
-    // update(data)
+    update(data)
   }, 10000)
 
   createlinechart(yrsall, resaleyravg)
@@ -86,7 +86,7 @@ d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
 
   // change to boxplot?
   // createtypeareachart(flattypeall, flattypeavg)
-  createtypeareachart(modelgroup, flattypeavg)
+  createtypeareachart(flatmodelall, flattypeavg)
 
   createstacked(data)
 
@@ -180,11 +180,11 @@ function update(data) {
 
   updatebar(townsall, townresaleavg, 'Avg Resale Price ($)')
 
-  updatetypearea(modelgroup, flattypeavg, 'Avg Resale Price ($)')
+  updatetypearea(flatmodelall, flattypeavg, 'Avg Resale Price ($)')
 
-  updatestacked(data, 'Count')
+  // updatestacked(data, 'Count')
 
-  updatetypepie
+  updatetypepie()
   
 
  

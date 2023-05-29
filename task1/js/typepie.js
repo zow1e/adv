@@ -8,10 +8,10 @@ function createtypepie(data) {
 
     console.log('type pie printing')
     
-    MARGIN = { LEFT: 300, RIGHT: 60, TOP: 120 , BOTTOM: 150 }
+    MARGIN = { LEFT: 270, RIGHT: 60, TOP: 180 , BOTTOM: 100 }
     pWIDTH = 700 - MARGIN.LEFT - MARGIN.RIGHT
     pHEIGHT = 400 - MARGIN.TOP - MARGIN.BOTTOM
-    RADIUS = (Math.min(pWIDTH, pHEIGHT) / 2) + 10
+    RADIUS = (Math.min(pWIDTH, pHEIGHT) / 2) + 50
         
     const svg = d3.select('#pie-type').append("svg")
       .attr("width", pWIDTH + MARGIN.LEFT + MARGIN.RIGHT)
@@ -29,13 +29,13 @@ function createtypepie(data) {
       .outerRadius(RADIUS)
 
     tg.append("text")
-      .attr("y", -100)
-      .attr("x", -140)
-      .attr("font-size", "20px")
+      .attr("y", -120)
+      .attr("x", -250)
+      .attr("font-size", "19px")
       .attr("text-anchor", "start")
       .text("Count of Flat Models")
 
-    colorScale = d3.scaleOrdinal()
+    pcolorScale = d3.scaleOrdinal()
     .range(d3.schemeCategory10)
 
 		wrangleData(data)
@@ -79,10 +79,10 @@ function createtypepie(data) {
     //   .attrTween("d", arcTween)
   
      path.enter().append("path")
-     .attr('fill', d => colorScale(d.data.town))
+     .attr('fill', d => pcolorScale(d.data.town))
      .attr("stroke", "black")
      .style("stroke-width", "1px")
-     .style("opacity", 0.7)
+    //  .style("opacity", 0.7)
       .transition( t)
       .attr('d', arc)
         // .attrTween("d", arcTween)
@@ -111,7 +111,7 @@ function createtypepie(data) {
             legendrow.append('rect')
             .attr('width', 10)
             .attr('height', 10)
-            .attr('fill', colorScale(model))
+            .attr('fill', pcolorScale(model))
 
             legendrow.append('text')
             .attr('x', 20)

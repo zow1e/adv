@@ -7,9 +7,9 @@ function createtypeareachart(xaxis, yaxis) {
 
     console.log('area printing')
     
-    MARGIN = { LEFT: 80, RIGHT: 100, TOP: 50 , BOTTOM: 150 }
+    MARGIN = { LEFT: 80, RIGHT: 100, TOP: 10 , BOTTOM: 170 }
     WIDTH = 700 - MARGIN.LEFT - MARGIN.RIGHT
-    HEIGHT = 400 - MARGIN.TOP - MARGIN.BOTTOM
+    HEIGHT = 420 - MARGIN.TOP - MARGIN.BOTTOM
         
     const svg = d3.select('#type-area').append("svg")
       .attr("width", WIDTH + MARGIN.LEFT + MARGIN.RIGHT)

@@ -113,7 +113,7 @@ function updateline(xaxis, yaxis, ylabel) {
     .call(yAxisCall) 
 
 
-  d3.selectAll("path.line").remove();
+  d3.selectAll("path.line").remove()
 
       // draw line
   let line = d3.line()

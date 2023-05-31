@@ -7,13 +7,13 @@ function createtypeareachart(xaxis, yaxis) {
 
     console.log('area printing')
     
-    MARGIN = { LEFT: 80, RIGHT: 100, TOP: 10 , BOTTOM: 170 }
-    WIDTH = 700 - MARGIN.LEFT - MARGIN.RIGHT
-    HEIGHT = 420 - MARGIN.TOP - MARGIN.BOTTOM
+    const MARGIN = { LEFT: 80, RIGHT: 100, TOP: 50 , BOTTOM: 60 }
+    const WIDTH = 700 - MARGIN.LEFT - MARGIN.RIGHT
+    aHEIGHT = 370 - MARGIN.TOP - MARGIN.BOTTOM
         
     const svg = d3.select('#type-area').append("svg")
       .attr("width", WIDTH + MARGIN.LEFT + MARGIN.RIGHT)
-      .attr("height", HEIGHT + MARGIN.TOP + MARGIN.BOTTOM)
+      .attr("height", aHEIGHT + MARGIN.TOP + MARGIN.BOTTOM)
         
     cg = svg.append("g")
       .attr("transform", `translate(${MARGIN.LEFT}, ${MARGIN.TOP})`)
@@ -25,12 +25,12 @@ function createtypeareachart(xaxis, yaxis) {
       .padding(0.1);
   
     cy = d3.scaleLinear()
-      .range([HEIGHT, 0])
+      .range([aHEIGHT, 0])
   
               
     cxAxisGroup = cg.append("g")
       .attr("class", "x axis")
-      .attr("transform", `translate(0, ${HEIGHT})`)
+      .attr("transform", `translate(0, ${aHEIGHT})`)
   
     cyAxisGroup = cg.append("g")
       .attr("class", "y axis")
@@ -40,14 +40,14 @@ function createtypeareachart(xaxis, yaxis) {
     cg.append("text")
       .attr("class", "x axis-label")
       .attr("x", WIDTH / 2)
-      .attr("y", HEIGHT + 60)
+      .attr("y", aHEIGHT + 60)
       .attr("font-size", "20px")
       .attr("text-anchor", "middle")
   
     // Y label
     Ylabel = cg.append("text")
       .attr("class", "y axis-label")
-      .attr("x", - (HEIGHT / 2))
+      .attr("x", - (aHEIGHT / 2))
       .attr("y", -60)
       .attr("font-size", "20px")
       .attr("text-anchor", "middle")
@@ -107,7 +107,7 @@ function updatetypearea(xaxis, yaxis, ylabel) {
         .attr("class", "exit")
         .transition(t)
         .attr("height", 0)
-        .attr("y", HEIGHT)
+        .attr("y", aHEIGHT)
         .style("fill-opacity", "0.1")
         .remove()
 
@@ -116,7 +116,7 @@ function updatetypearea(xaxis, yaxis, ylabel) {
         .attr("class", "update")
         .transition(t)
         .attr("y", (d, i) => cy(yaxis[i]))
-        .attr("height", (d, i) => HEIGHT - cy(yaxis[i]))
+        .attr("height", (d, i) => aHEIGHT - cy(yaxis[i]))
         .attr("x", d => cx(d))
         .attr("width", cx.bandwidth)
 
@@ -129,7 +129,7 @@ function updatetypearea(xaxis, yaxis, ylabel) {
         .attr("fill", "dodgerblue")
         .transition(t)
         .attr("y", (d, i) => cy(yaxis[i]))
-        .attr("height", (d, i) => HEIGHT - cy(yaxis[i]))
+        .attr("height", (d, i) => aHEIGHT - cy(yaxis[i]))
 
     //     .on("mouseover", function(d){tooltip.text((d, i) => y(yaxis[i])); return tooltip.style("visibility", "visible");})
     // .on("mousemove", function(){return tooltip.style("top", (d3.event.pageY-10)+"px").style("left",(d3.event.pageX+10)+"px");})

@@ -7,13 +7,13 @@ function createbarchart(xaxis, yaxis) {
 
   console.log('barchart printing')
   
-  MARGIN = { LEFT: 80, RIGHT: 100, TOP: 50 , BOTTOM: 150 }
-  WIDTH = 700 - MARGIN.LEFT - MARGIN.RIGHT
-  HEIGHT = 420 - MARGIN.TOP - MARGIN.BOTTOM
+  const MARGIN = { LEFT: 80, RIGHT: 100, TOP: 50 , BOTTOM: 150 }
+  const WIDTH = 700 - MARGIN.LEFT - MARGIN.RIGHT
+  BHEIGHT = 420 - MARGIN.TOP - MARGIN.BOTTOM
       
   const svg = d3.select('#bar-chart').append("svg")
     .attr("width", WIDTH + MARGIN.LEFT + MARGIN.RIGHT)
-    .attr("height", HEIGHT + MARGIN.TOP + MARGIN.BOTTOM)
+    .attr("height", BHEIGHT + MARGIN.TOP + MARGIN.BOTTOM)
       
   bg = svg.append("g")
     .attr("transform", `translate(${MARGIN.LEFT}, ${MARGIN.TOP})`)
@@ -25,12 +25,12 @@ function createbarchart(xaxis, yaxis) {
     .padding(0.1);
 
   y = d3.scaleLinear()
-    .range([HEIGHT, 0])
+    .range([BHEIGHT, 0])
 
             
   bxAxisGroup = bg.append("g")
     .attr("class", "x axis")
-    .attr("transform", `translate(0, ${HEIGHT})`)
+    .attr("transform", `translate(0, ${BHEIGHT})`)
 
   byAxisGroup = bg.append("g")
     .attr("class", "y axis")
@@ -40,14 +40,14 @@ function createbarchart(xaxis, yaxis) {
   bg.append("text")
     .attr("class", "x axis-label")
     .attr("x", WIDTH / 2)
-    .attr("y", HEIGHT + 60)
+    .attr("y", BHEIGHT + 60)
     .attr("font-size", "20px")
     .attr("text-anchor", "middle")
 
   // Y label
   bYlabel = bg.append("text")
     .attr("class", "y axis-label")
-    .attr("x", - (HEIGHT / 2))
+    .attr("x", - (BHEIGHT / 2))
     .attr("y", -60)
     .attr("font-size", "20px")
     .attr("text-anchor", "middle")
@@ -64,33 +64,11 @@ function createbarchart(xaxis, yaxis) {
 function updatebar(xaxis, yaxis, ylabel) {
     
   console.log('updating bar')
-
-
-      // const dayNest = d3.nest()
-      //   .key(d => formatTime(d.date))
-      //   .entries(calls)
-  
-      // const dataFiltered = const dayNest
-      //   .map(day => day.values.reduce(
-      //     (accumulator, current) => {
-      //         accumulator.date = day.key
-      //         accumulator[current.team] = accumulator[current.team] + current[const variable]
-      //         return accumulator
-      //     }, {
-      //       "northeast": 0,
-      //       "midwest": 0,
-      //       "south": 0,
-      //       "west": 0
-      //     }
-      //   ))
-  
-  
   
   const t = d3.transition().duration(600)
 
   x.domain(xaxis)
-  y.domain([0, 
-          d3.max(yaxis)])
+  y.domain([0, d3.max(yaxis)])
   
   const xAxisCall = d3.axisBottom(x)  
 
@@ -129,7 +107,7 @@ function updatebar(xaxis, yaxis, ylabel) {
         .attr("class", "exit")
         .transition(t)
         .attr("height", 0)
-        .attr("y", HEIGHT)
+        .attr("y", BHEIGHT)
         .style("fill-opacity", "0.1")
         .remove()
 
@@ -138,7 +116,7 @@ function updatebar(xaxis, yaxis, ylabel) {
         .attr("class", "update")
         .transition(t)
         .attr("y", (d, i) => y(yaxis[i]))
-        .attr("height", (d, i) => HEIGHT - y(yaxis[i]))
+        .attr("height", (d, i) => BHEIGHT - y(yaxis[i]))
         .attr("x", d => x(d))
         .attr("width", x.bandwidth)
 
@@ -154,7 +132,7 @@ function updatebar(xaxis, yaxis, ylabel) {
             // return d + "px"})
         .transition(t)
         .attr("y", (d, i) => y(yaxis[i]))
-        .attr("height", (d, i) => HEIGHT - y(yaxis[i]))
+        .attr("height", (d, i) => BHEIGHT - y(yaxis[i]))
 
         // .addEventListener("mouseover", function (actual, i) {
 

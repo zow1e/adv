@@ -17,8 +17,8 @@ monthNames = [ "January", "February", "March", "April", "May", "June",
 // let barfile
 
 
-// d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
-d3.csv("data/small.csv").then(data => {
+d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
+// d3.csv("data/small.csv").then(data => {
   data.forEach(d => {
     d.block = Number(d.block)
     d.floor_area_sqm = Number(d.floor_area_sqm)
@@ -31,9 +31,13 @@ d3.csv("data/small.csv").then(data => {
     d.year = parseTime(d.month).getFullYear()
     d.month = formatMonth(parseTime(d.month))
 
-    d.remainingyrs = d.year - d.lease_commence_date
+    d.remainingyrs = (d.lease_commence_date + 99) - d.year
 
   })
+  // data.sort((d, k )=> {
+  //   return d3.ascending(d.resale_price, k.resale_price)
+  // })
+
     // //   groups
     yearsgroup = d3.group(data, d => d.year)
     monthsgroup = d3.group(data, d => d.month)
@@ -62,15 +66,21 @@ d3.csv("data/small.csv").then(data => {
     span2.textContent = d3.max(datesall)
 
     //default values
-    calcAverage = {avg(value, time) {
+    calcs = {avg(value, time) {
         rolled = d3.rollup(data, v => d3.mean(v, d => d[value]), d => d[time])
         arrayofvals = Array.from(rolled.values())
         return arrayofvals
-    }}
+    },
+  count(time){
+    rolled = d3.rollup(data, v =>v.length, d => d[time])
+        arrayofvals = Array.from(rolled.values())
+        return arrayofvals
+  }
+}
 
-    resaleyravg = calcAverage.avg('resale_price', 'year')
-    townresaleavg = calcAverage.avg('resale_price', 'town')
-    flattypeavg= calcAverage.avg('resale_price', 'flat_model')
+    resaleyravg = calcs.avg('resale_price', 'year')
+    townresaleavg = calcs.avg('resale_price', 'town')
+    flattypeavg= calcs.avg('resale_price', 'flat_model')
 
 
 
@@ -88,82 +98,10 @@ d3.csv("data/small.csv").then(data => {
   // createtypeareachart(flattypeall, flattypeavg)
   createtypeareachart(flatmodelall, flattypeavg)
 
-  createstacked(data)
+  createstacked(data, townresaleavg)
 
   createtypepie(data)
 })
-
-
-//check value in time filter
-function checktime(time) {
-    if (time == 'year') {
-      return yrsall
-    }
-    else if (time == 'month'){
-      return monthsall
-    }
-    else {
-        // console.log(datesall)
-      return datesall
-    }
-  }
-
-  // check value in value filter
-function checkval(value, xaxis, timecol) {
-    if (value == 'resale_price') {
-      resaleavg = calcAverage.avg(value, timecol)
-      label = 'Avg Resale Price ($)'
-      return [resaleavg, label]
-      
-    }
-    else if (value == 'floor_area_sqm'){
-		valavg = calcAverage.avg(value, timecol)
-		label = 'Avg Floor Area (Sqm)'
-		return [valavg, label]
-    }
-  }
-
-  // change value in filter
-$("#var-select").on("change", () => {
-    console.log('change value')
-
-    const value = $("#var-select").val()
-    const time = $("#var-time-select").val()
-    
-    xaxis = checktime(time)
-
-    valuecheck = checkval(value, xaxis, time)
-    yaxis = valuecheck[0]
-    ylabel = valuecheck[1]
-    updateline(xaxis, yaxis, ylabel)
-
-    valuecheck = checkval(value, xaxis, 'town')
-    yaxis = valuecheck[0]
-    ylabel = valuecheck[1]
-    updatebar(townsall, yaxis, ylabel)
-
-	valuecheck = checkval(value, xaxis, 'flat_type')
-    yaxis = valuecheck[0]
-    ylabel = valuecheck[1]
-    updatetypearea(flattypeall, yaxis, ylabel)
-  })
-
-  // change time in filter
-$("#var-time-select").on("change", () => {
-    console.log('change time')
-
-    const value = $("#var-select").val()
-    const time = $("#var-time-select").val()
-    
-    xaxis = checktime(time)
-
-    valuecheck = checkval(value, xaxis, time)
-    yaxis = valuecheck[0]
-    ylabel = valuecheck[1]
-
-    // console.log('change time', yaxis)
-    updateline(xaxis, yaxis, ylabel)
-  })
 
 
 
@@ -182,7 +120,7 @@ function update(data) {
 
   updatetypearea(flatmodelall, flattypeavg, 'Avg Resale Price ($)')
 
-  // updatestacked(data, 'Count')
+  updatestacked('Count', data, townresaleavg, 'Avg Resale Price ($)')
 
   updatetypepie()
   
@@ -191,4 +129,3 @@ function update(data) {
 }
 
 console.log('main done')
-

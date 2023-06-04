@@ -6,12 +6,12 @@
 
 function createtypepie(data) {
 
-  console.log('type pie printing')
+  // console.log('type pie printing')
   
-  MARGIN = { LEFT: 270, RIGHT: 60, TOP: 180 , BOTTOM: 100 }
+  MARGIN = { LEFT: 280, RIGHT: 60, TOP: 170 , BOTTOM: 100 }
   pWIDTH = 700 - MARGIN.LEFT - MARGIN.RIGHT
-  pHEIGHT = 400 - MARGIN.TOP - MARGIN.BOTTOM
-  RADIUS = (Math.min(pWIDTH, pHEIGHT) / 2) + 50
+  pHEIGHT = 450 - MARGIN.TOP - MARGIN.BOTTOM
+  RADIUS = (Math.min(pWIDTH, pHEIGHT) / 2) + 25
       
   const svg = d3.select('#pie-type').append("svg")
     .attr("width", pWIDTH + MARGIN.LEFT + MARGIN.RIGHT)
@@ -29,43 +29,45 @@ function createtypepie(data) {
     .outerRadius(RADIUS)
 
   tg.append("text")
-    .attr("y", -120)
+    .attr("y", -150)
     .attr("x", -150)
     .attr("font-size", "17px")
     .attr("text-anchor", "start")
-    .text("Count of Flat Models")
+    .text("Count of 'Improved' flats by flat type")
 
   pcolorScale = d3.scaleOrdinal()
   .range(d3.schemeCategory10)
 
   
 
-  wrangleData(data)
-  addpieLegend()
+  wranglePieData(data)
+  // addpieLegend()
 }
 
-function wrangleData(data) {
-
-  rolledpie = d3.rollup(data, v => v.length, d => d.flat_type)
-
-  // console.log(rolledpie)
+function wranglePieData(data) {
+  
+  // rolledpie = d3.rollup(data, v => v.length, d => d.flat_type)
+  rolledpie = d3.rollup(data, v => d3.sum(v, d => d.flat_model == 'Improved'), d => d.flat_type)
 
   piearr = []
-  townarray = []
+  townarray = [] // = flat type
 
   rolledpie.forEach((d , i) => {
     townarray.push(i)
     piearr.push({
       'town': i,
-      'count': d
+      'count': d.toFixed(2)
     })
   })
 
   updatetypepie()
+  tg.selectAll('g.legend').remove()
+  addpieLegend()
 }
 
 function updatetypepie() {
-  console.log('update pie')
+  // console.log('update pie')
+  // console.log(piearr)
 
   pie.value(d => d.count)
 
@@ -74,23 +76,23 @@ function updatetypepie() {
   const path =  tg.selectAll("path")
   .data(pie(piearr))
 
-  //  path.transition( t)
-  //   .attrTween("d", arcTween)
+   path.transition(t)
+    .attrTween("d", arcTween)
 
   path.enter().append("path")
   .attr('fill', d => pcolorScale(d.data.town))
   .attr("stroke", "black")
   .style("stroke-width", "1px")
   //  .style("opacity", 0.7)
-  .transition( t)
+  .transition(t)
   .attr('d', arc)
-    // .attrTween("d", arcTween)
+    .attrTween("d", arcTween)
 
-  // function arcTween(d) {
-  //   const i = d3.interpolate(this._current, d)
-  //   this._current = i(1)
-  //   return (t) =>  arc(i(t))
-  // }
+  function arcTween(d) {
+    const i = d3.interpolate(this._current, d)
+    this._current = i(1)
+    return (t) =>  arc(i(t))
+  }
 
   
 }
@@ -98,10 +100,11 @@ function updatetypepie() {
 function addpieLegend() {
 
   const flatModels = townarray
+  // console.log(flatModels)
           
   const legend = tg.append("g")
   .attr("class", "legend")
-  .attr("transform", `translate(${pWIDTH-200}, ${pHEIGHT-200})`)
+  .attr("transform", `translate(${pWIDTH-200}, ${pHEIGHT-270})`)
 
   flatModels.forEach((model, i) => {
     const legendrow = legend.append('g')
@@ -116,7 +119,8 @@ function addpieLegend() {
     .attr('x', 20)
     .attr('y', 10)
     .style("text-transform", "capitalize")
-    .text(model)
+    .text('value: ' + pie(piearr)[i].data.count)
+    // .text(model + ', value: ' + pie(piearr)[i].data.count)
     
   })
 }

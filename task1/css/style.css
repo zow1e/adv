@@ -52,6 +52,10 @@ stroke: #777;
 stroke-width: 3px;
 }
 
+.overlay {
+  pointer-events: all;
+}
+
 .hover-line {
 stroke: #777;
 stroke-width: 2px;

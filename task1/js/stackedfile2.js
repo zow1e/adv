@@ -6,8 +6,7 @@
 
 function createstacked(data, linedata) {
 
-  console.log('stacked printing')
-  liney = linedata
+  // console.log('stacked printing')
   
   MARGIN = { LEFT: 80, RIGHT: 250, TOP: 50 , BOTTOM: 150 }
   WIDTH = 800 - MARGIN.LEFT - MARGIN.RIGHT
@@ -73,12 +72,13 @@ function createstacked(data, linedata) {
     .attr("text-anchor", "middle")
     .attr("transform", "rotate(-90)")
 
-    wrangleStacked(data)
+    wrangleStacked(data, linedata)
+    // updatestacked(data, 'Count', linedata, 'Avg Resale Price ($)', 'town')
   addLegend()
 
 }
 
-function wrangleStacked(data) {
+function wrangleStacked(data, linedata) {
 
   keystype = Array.from(new Set(data.map((d) => d.flat_type)))
   colorScale.domain(keystype)
@@ -109,24 +109,25 @@ function wrangleStacked(data) {
     })
   }
 
-  stackData = matrixData()
-  linedata = liney
+  ss = matrixData()
 
-  updatestacked('Count', data, linedata, 'Avg Resale Price ($)')
+  updatestacked('Count', linedata, 'Avg Resale Price ($)')
 
 }
       
       
-function updatestacked(ylabel, data, linevar, linelabel) {
+function updatestacked(ylabel, linevar, linelabel) {
+  // newdata = filterTown(ff, data)
+  // wrangleStacked(data)
     
-  console.log('updating stacked')
+  // console.log('updating stacked')
 
   // const xaxis = Array.from(new Set(data.map((d) => d.town)))
   
   const t = d3.transition().duration(600)
 
   const stacked = d3.stack().keys(keystype)
-  const stackedData = stacked(stackData)
+  const stackedData = stacked(ss)
 
   const ymax = d3.max(stackedData, d => {
     return d3.max(d, d => {
@@ -145,7 +146,7 @@ function updatestacked(ylabel, data, linevar, linelabel) {
       .attr("transform", "rotate(-40)")
   
   const yAxisCall = d3.axisLeft(kyScale)
-  // .ticks(5)
+  // .ticks(7)
   //   .tickFormat(d => d)
   kyAxisGroup
   .transition(t)
@@ -153,16 +154,18 @@ function updatestacked(ylabel, data, linevar, linelabel) {
 
 
       // Show the bars
-  const rects = kg.append("g")
-  .selectAll("g")
+  const rects = kg
+  .append("g")
+  .selectAll("rect")
   .data(stackedData)
+  // console.log(stackedData)
 
   //exit old bars
-  rects.exit()
+  rects.selectAll("g").selectAll("rect").exit()
   .attr("class", "exit")
   .transition(t)
   .attr("height", 0)
-  .attr("y", BHEIGHT)
+  .attr("y", HEIGHT)
   .style("fill-opacity", "0.1")
   .remove()
 
@@ -189,11 +192,14 @@ function updatestacked(ylabel, data, linevar, linelabel) {
       .attr("y", y(0))
       .attr("x", d => x(d))
       .attr("width", x.bandwidth)
-    .transition(t)
+    // .transition(t)
       .attr("x", d =>  kxScale(d.data.town))
       .attr("y", d =>  kyScale(d[1]))
       .attr("height", d =>  kyScale(d[0]) - kyScale(d[1]))
       .attr("width",kxScale.bandwidth)
+
+  
+      // console.log(linevar)
 
     
   // add line chart
@@ -206,11 +212,13 @@ function updatestacked(ylabel, data, linevar, linelabel) {
   .transition(t)
   .call(lineAxisCall)
 
-  const xaxis = Array.from(new Set(data.map((d) => d.town)))
+  const xaxis = Array.from(new Set(ss.map((d) => d.town)))
   // draw line
-  let line = d3.line()
+  const lline = d3.line()
     .x(d => kxScale(d) + kxScale.bandwidth() / 2)
     .y((d, i) => lineyScale(linevar[i]))
+
+  kg.selectAll("path.line").remove()
 
   kg.append("path")
     .attr("class", "line")
@@ -218,7 +226,9 @@ function updatestacked(ylabel, data, linevar, linelabel) {
     .attr("stroke", "#236AED")
     .attr("stroke-width", "3px")
     .transition(t)
-    .attr("d", line(xaxis))
+    .attr("d", lline(xaxis))
+
+    // console.log('addline')
   
   
   // add label

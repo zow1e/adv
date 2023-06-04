@@ -19,6 +19,8 @@ monthNames = [ "January", "February", "March", "April", "May", "June",
 
 d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
 // d3.csv("data/small.csv").then(data => {
+  pdata = data
+
   data.forEach(d => {
     d.block = Number(d.block)
     d.floor_area_sqm = Number(d.floor_area_sqm)
@@ -38,79 +40,120 @@ d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
   //   return d3.ascending(d.resale_price, k.resale_price)
   // })
 
-    // //   groups
-    yearsgroup = d3.group(data, d => d.year)
-    monthsgroup = d3.group(data, d => d.month)
-    datesgroup = d3.group(data, d => d.date)
-    townsgroup = d3.group(data, d => d.town)
+  makeAgg(data)
 
-    typegroup = d3.group(data, d => d.flat_type)
-    modelgroup = d3.group(data, d => d.flat_model)
+  // set value of items
+  span1 = document.getElementById('dateLabel1')
+  span1.textContent = d3.min(datesall)
+  span2 = document.getElementById('dateLabel2')
+  span2.textContent = d3.max(datesall)
+  
+  var select = document.getElementById('var-town-select')
 
-	// flattowngroup = d3.group(data, d => d.town, d => d.flat_type)
 
-    //lists
-    yrsall = Array.from(yearsgroup.keys()) // all years in dataset
-    monthsall = Array.from(monthsgroup.keys())
-    datesall = Array.from(datesgroup.keys())
-    townsall = Array.from(townsgroup.keys())
+  townsall.forEach(t => {
+    select.add(new Option(t, t))
+  })
 
-    flattypeall = Array.from(typegroup.keys())
-    flatmodelall = Array.from(modelgroup.keys())
-    
+  d3.interval(() => {
+    //default filters
+    document.getElementById('var-select').value = 'resale_price'
+    document.getElementById('var-time-select').value = 'year'
+    document.getElementById('var-town-select').value = 'town'
 
-    // set value of date range
-    span1 = document.getElementById('dateLabel1')
-    span1.textContent = d3.min(datesall)
-    span2 = document.getElementById('dateLabel2')
-    span2.textContent = d3.max(datesall)
+    newdata = makeAgg(data)
+    reset(newdata)
+  }, 10000)
 
-    //default values
-    calcs = {avg(value, time) {
-        rolled = d3.rollup(data, v => d3.mean(v, d => d[value]), d => d[time])
-        arrayofvals = Array.from(rolled.values())
-        return arrayofvals
-    },
+  createlinechart(yrsall, resaleyravg)
+  createbarchart(townsall, townresaleavg)
+  createtypeareachart(flatmodelall, flattypeavg, flattypeyearsvg)
+  createstacked(data, townresaleavg)
+  createtypepie(data)
+})
+
+// functions
+
+function makeAgg(ogdata) {
+  const townf = $("#var-town-select").val()
+  const data = filterTown(townf, ogdata)
+
+  // //   groups
+  yearsgroup = d3.group(data, d => d.year)
+  monthsgroup = d3.group(data, d => d.month)
+  datesgroup = d3.group(data, d => d.date)
+  townsgroup = d3.group(data, d => d.town)
+
+  typegroup = d3.group(data, d => d.flat_type)
+  modelgroup = d3.group(data, d => d.flat_model)
+
+  //lists
+  yrsall = Array.from(yearsgroup.keys()) // all years in dataset
+  monthsall = Array.from(monthsgroup.keys())
+  datesall = Array.from(datesgroup.keys())
+  townsall = Array.from(townsgroup.keys())
+
+  flattypeall = Array.from(typegroup.keys())
+  flatmodelall = Array.from(modelgroup.keys())
+
+  //default values
+  calcs = {avg(value, time) {
+      rolled = d3.rollup(data, v => d3.mean(v, d => d[value]), d => d[time])
+      arrayofvals = Array.from(rolled.values())
+      return arrayofvals
+  },
   count(time){
     rolled = d3.rollup(data, v =>v.length, d => d[time])
         arrayofvals = Array.from(rolled.values())
         return arrayofvals
   }
+  } 
+
+  resaleyravg = calcs.avg('resale_price', 'year')
+  townresaleavg = calcs.avg('resale_price', 'town')
+  flattypeavg = calcs.avg('resale_price', 'flat_model')
+  flattypeyearsvg = calcs.avg('remainingyrs', 'flat_model')
+
+  return data
+
 }
 
-    resaleyravg = calcs.avg('resale_price', 'year')
-    townresaleavg = calcs.avg('resale_price', 'town')
-    flattypeavg= calcs.avg('resale_price', 'flat_model')
+function filterTown(filter, gdata){
+  if (filter == 'town') {
+    return gdata
+  }
+  else {
+    data = []
+    gdata.forEach(d => {
+      if (d.town == filter){
+      data.push(d)}
+    })
+    return data
+  }
+}
 
+function reset(data){
 
+  // console.log('reset all')
 
-  d3.interval(() => {
-    
-    update(data)
-  }, 10000)
+  //default charts 
+  updateline(yrsall, resaleyravg, 'Avg Resale Price ($)')
 
-  createlinechart(yrsall, resaleyravg)
+  updatebar(townsall, townresaleavg, 'Avg Resale Price ($)')
 
-  // create histogram + stacked barchart
-  createbarchart(townsall, townresaleavg)
+  updatetypearea(flatmodelall, flattypeavg, 'Avg Resale Price ($)')
 
-  // change to boxplot?
-  // createtypeareachart(flattypeall, flattypeavg)
-  createtypeareachart(flatmodelall, flattypeavg)
+  // updatestacked(data, 'Count', townresaleavg, 'Avg Resale Price ($)', 'town')
+  updatestacked('Count', townresaleavg, 'Avg Resale Price ($)')
+  // wrangleStacked(data, townresaleavg)
 
-  createstacked(data, townresaleavg)
+  wranglePieData(data)
 
-  createtypepie(data)
-})
-
+}
 
 
 function update(data) {
-  console.log('update all')
-
-  //default filters
-  document.getElementById('var-select').value = 'resale_price'
-  document.getElementById('var-time-select').value = 'year'
+  // console.log('update all')
   
 
   //default charts 
@@ -120,12 +163,10 @@ function update(data) {
 
   updatetypearea(flatmodelall, flattypeavg, 'Avg Resale Price ($)')
 
-  updatestacked('Count', data, townresaleavg, 'Avg Resale Price ($)')
+  // updatestacked(data, 'Count', townresaleavg, 'Avg Resale Price ($)', townchange)
+  // updatestacked('Count', townresaleavg, 'Avg Resale Price ($)')
 
-  updatetypepie()
-  
-
- 
+  wranglePieData(data)
 }
 
-console.log('main done')
+// console.log('main done')

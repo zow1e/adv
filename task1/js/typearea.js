@@ -3,11 +3,13 @@
 */
 
 
-function createtypeareachart(xaxis, yaxis) {
+function createtypeareachart(xaxis, yaxis, lineval) {
 
-    console.log('area printing')
+  linevar = lineval
+
+    // console.log('area printing')
     
-    const MARGIN = { LEFT: 80, RIGHT: 100, TOP: 50 , BOTTOM: 60 }
+    const MARGIN = { LEFT: 80, RIGHT: 100, TOP: 50 , BOTTOM: 90 }
     const WIDTH = 700 - MARGIN.LEFT - MARGIN.RIGHT
     aHEIGHT = 370 - MARGIN.TOP - MARGIN.BOTTOM
         
@@ -26,6 +28,9 @@ function createtypeareachart(xaxis, yaxis) {
   
     cy = d3.scaleLinear()
       .range([aHEIGHT, 0])
+
+    clineyScale = d3.scaleLinear()
+    .rangeRound([aHEIGHT, 0])
   
               
     cxAxisGroup = cg.append("g")
@@ -52,6 +57,21 @@ function createtypeareachart(xaxis, yaxis) {
       .attr("font-size", "20px")
       .attr("text-anchor", "middle")
       .attr("transform", "rotate(-90)")
+
+    // linelabel
+    clineyAxisGroup = cg.append("g")
+    .attr("class", "yaxis2")
+    .attr("transform", `translate(${WIDTH}, 0)`)
+
+    // Y label
+    const Linelabel = cg.append("text")
+      .attr("class", "y axis-label")
+      .attr("x", - (aHEIGHT / 2) +10)
+      .attr("y", WIDTH+60)
+      .attr("font-size", "20px")
+      .attr("text-anchor", "middle")
+      .attr("transform", "rotate(-90)")
+      .text('Avg Years Left on Lease')
         
   
     // const addLegend()
@@ -63,7 +83,7 @@ function createtypeareachart(xaxis, yaxis) {
         
 function updatetypearea(xaxis, yaxis, ylabel) {
     
-    console.log('updating area')
+    // console.log('updating area')
 
     const t = d3.transition().duration(600)
 
@@ -80,9 +100,18 @@ function updatetypearea(xaxis, yaxis, ylabel) {
         .attr("text-anchor", "end")
         .attr("transform", "rotate(-40)")
 
+    function lableCheck(d) {
+        if (ylabel == 'Avg Floor Area (Sqm)' || ylabel == 'Count of Units'){
+          return d
+        } 
+        else if (ylabel == 'Avg Resale Price ($)'){
+          return "$" + d
+        }
+  }
+
     const yAxisCall = d3.axisLeft(cy)
         .ticks(5)
-        .tickFormat(d => "$"+d)
+        .tickFormat(d => lableCheck(d))
         cyAxisGroup
         .transition(t)
         .call(yAxisCall) 
@@ -126,7 +155,7 @@ function updatetypearea(xaxis, yaxis, ylabel) {
         .attr("y", cy(0))
         .attr("x", d => cx(d))
         .attr("width", cx.bandwidth)
-        .attr("fill", "dodgerblue")
+        .attr("fill", "#1ABC9C")
         .transition(t)
         .attr("y", (d, i) => cy(yaxis[i]))
         .attr("height", (d, i) => aHEIGHT - cy(yaxis[i]))
@@ -136,7 +165,38 @@ function updatetypearea(xaxis, yaxis, ylabel) {
     // .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
     
     
-        Ylabel.text(ylabel)
+      // add line chart
+      // console.log(linevar)
+  clineyScale.domain([0,d3.max(linevar)])
+
+  const lineAxisCall = d3.axisRight(clineyScale)
+  // .ticks(5)
+  //   .tickFormat(d => d)
+  clineyAxisGroup
+  .transition(t)
+  .call(lineAxisCall)
+
+  // const xaxis = Array.from(new Set(stackData.map((d) => d.town)))
+  // draw line
+  const lline = d3.line()
+    .x(d => cx(d) + cx.bandwidth() / 2)
+    .y((d, i) => clineyScale(linevar[i]))
+
+  cg.selectAll("path.line").remove()
+
+  cg.append("path")
+    .attr("class", "line")
+    .attr("fill", "none")
+    .attr("stroke", "#236AED")
+    .attr("stroke-width", "3px")
+    .transition(t)
+    .attr("d", lline(xaxis))
+
+    // console.log('addline')
+  
+  
+  // add label
+    Ylabel.text(ylabel)  
     
 }
       

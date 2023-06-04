@@ -5,31 +5,32 @@
 
 function createlinechart(xaxis, yaxis) {
 
-  console.log('linechart printing')
+  // console.log('linechart printing')
 
-  const MARGIN = { LEFT: 80, RIGHT: 100, TOP: 50, BOTTOM: 40 }
-  WIDTH = 700 - MARGIN.LEFT - MARGIN.RIGHT
-  HEIGHT = 370 - MARGIN.TOP - MARGIN.BOTTOM
+  LMARGIN = { LEFT: 80, RIGHT: 100, TOP: 50, BOTTOM: 40 }
+  LWIDTH = 700 - LMARGIN.LEFT - LMARGIN.RIGHT
+  LHEIGHT = 370 - LMARGIN.TOP - LMARGIN.BOTTOM
     
-  const svg = d3.select('#line-chart').append("svg")
-    .attr("width", WIDTH + MARGIN.LEFT + MARGIN.RIGHT)
-    .attr("height", HEIGHT + MARGIN.TOP + MARGIN.BOTTOM)
+  svg = d3.select('#line-chart').append("svg")
+    .attr("width", LWIDTH + LMARGIN.LEFT + LMARGIN.RIGHT)
+    .attr("height", LHEIGHT + LMARGIN.TOP + LMARGIN.BOTTOM)
 
   g = svg.append("g")
-    .attr("transform", `translate(${MARGIN.LEFT}, ${MARGIN.TOP})`)
+    .attr('class', 'lineg')
+    .attr("transform", `translate(${LMARGIN.LEFT}, ${LMARGIN.TOP})`)
 
-  const bisectDate = d3.bisector(xaxis, d => d).left
+  
   
       // // line chart
   ax = d3.scaleTime()
-  .range([0, WIDTH])
+  .range([0, LWIDTH])
 
   ay = d3.scaleLinear()
-    .range([HEIGHT, 0])
+    .range([LHEIGHT, 0])
     
   axAxisGroup = g.append("g")
     .attr("class", "x axis")
-    .attr("transform", `translate(0, ${HEIGHT})`)
+    .attr("transform", `translate(0, ${LHEIGHT})`)
   
   ayAxisGroup = g.append("g")
     .attr("class", "y axis")
@@ -46,8 +47,8 @@ function createlinechart(xaxis, yaxis) {
     // X label
   g.append("text")
     .attr("class", "x axis-label")
-    .attr("x", WIDTH / 2)
-    .attr("y", HEIGHT + 60)
+    .attr("x", LWIDTH / 2)
+    .attr("y", LHEIGHT + 60)
     .attr("font-size", "20px")
     .attr("text-anchor", "middle")
     .text("Year")
@@ -55,7 +56,7 @@ function createlinechart(xaxis, yaxis) {
     // Y label
   aYlabel = g.append("text")
     .attr("class", "y axis-label")
-    .attr("x", - (HEIGHT / 2))
+    .attr("x", - (LHEIGHT / 2))
     .attr("y", -60)
     .attr("font-size", "20px")
     .attr("text-anchor", "middle")
@@ -68,7 +69,20 @@ function createlinechart(xaxis, yaxis) {
   
 function updateline(xaxis, yaxis, ylabel) {
 
-  console.log('updating line')
+  // console.log(xaxis)
+
+  // console.log('updating line')
+
+  data = []
+  //combined dataset
+  xaxis.forEach((d, i )=> {
+    data.push({
+      'date': d,
+      'value': yaxis[i]
+    })
+  })
+
+  // console.log(data)
 
 
   const t = d3.transition().duration(600)
@@ -76,23 +90,28 @@ function updateline(xaxis, yaxis, ylabel) {
   // const value = flag ? "remainingyrs" : "resale_price";
 
   ax.domain(d3.extent(xaxis))
-  // x.domain(xaxis)
-  // ay.domain([d3.min(yaxis)/1.05,
-  ay.domain([0, 
-            d3.max(yaxis)*1.05])
+  ay.domain([0, d3.max(yaxis)*1.05])
 
-  // const formatTime = d3.timeFormat("%b %Y")
 
-  // function changetostring(dateobj) {
-  //   return formatTime(dateobj)
-  // }
-  // svg
-  // .append("g")
-  // .call(d3.axisBottom(ax).ticks(10).tickSizeInner(-HEIGHT))
+  function changetostring(dateobj) {
+    obj = String(dateobj).length
+    if (obj == 4) {
+      return dateobj }
+    else if (obj == 6) {
+      const timeParse = d3.timeParse('%m/%Y')
+      const formatTime = d3.timeFormat("%b %Y")
+      return formatTime(timeParse(dateobj)) }
+    else if (obj == 2) {
+      const timeParse = d3.timeParse('%m')
+      const formatTime = d3.timeFormat("%b")
+      return formatTime(timeParse(dateobj)) }
+  }
+
       
   const xAxisCall = d3.axisBottom(ax)
   .tickValues(xaxis)
-  .tickFormat((d) => d)
+
+  .tickFormat((d) => changetostring(d))
   // .innerTickSize(-HEIGHT)
   // .tickFormat((d) => formatTime(d))
 
@@ -104,21 +123,29 @@ function updateline(xaxis, yaxis, ylabel) {
       .attr("text-anchor", "end")
       .attr("transform", "rotate(-40)")
           
-    
+  function lableCheck(d) {
+    if (ylabel == 'Avg Floor Area (Sqm)' || ylabel == 'Count of Units'){
+      return d
+    }
+    else if (ylabel == 'Avg Resale Price ($)'){
+      return "$" + d
+    }
+  }
+
   const yAxisCall = d3.axisLeft(ay)
     .ticks(6)
-    .tickFormat(d => "$"+d)
+    .tickFormat(d => lableCheck(d))
     ayAxisGroup
     .transition(t)
     .call(yAxisCall) 
 
 
-  d3.selectAll("path.line").remove()
+  g.selectAll("path.line").remove()
 
       // draw line
   let line = d3.line()
-    .x(d => ax(d))
-    .y((d, i) => ay(yaxis[i]))
+    .x(d => ax(d.date))
+    .y(d=> ay(d.value))
     
 
   g.append("path")
@@ -127,46 +154,59 @@ function updateline(xaxis, yaxis, ylabel) {
     .attr("stroke", "blue")
     .attr("stroke-width", "3px")
     .transition(t)
-    .attr("d", line(xaxis))
+    .attr("d", line(data))
 
   aYlabel.text(ylabel)
 
 
-  // //tooltip
+  //tooltip
+  const bisectDate = d3.bisector(xaxis, d => d).left
 
-  // const tooltip = g.append('g')
-  // .attr('class', 'focus')
-  // .attr('display', 'none')
+  const focus = g.append("g")
+		.attr("class", "focus")
+		.style("display", "none")
 
-  // tooltip.append('line')
-  // .attr('class', 'x-hover-line hover-line')
-  // .attr('y', HEIGHT)
-  // .attr('x', 0)
+	focus.append("line")
+		.attr("class", "x-hover-line hover-line")
+		.attr("y1", 0)
+		.attr("y2", LHEIGHT)
 
-  // tooltip.append('circle')
-  // .attr('r', 7)
+	focus.append("line")
+		.attr("class", "y-hover-line hover-line")
+		.attr("x1", 0)
+		.attr("x2", LWIDTH)
 
-  // tooltip.append('text')
-  // .attr('x', 15)
-  // .attr('dy', '.31em')
+	focus.append("circle")
+		.attr("r", 7.5)
 
-  // g.append('rect')
-  // .attr('class', 'overlay')
-  // .attr('x', WIDTH)
-  // .attr('y', HEIGHT)
-  // .on("mouseover", () => focus.style("display", null))
-	// 	.on("mouseout", () => focus.style("display", "none"))
-	// 	.on("mousemove", mousemove)
+	focus.append("text")
+		.attr("x", 15)
+		.attr("dy", ".31em")
 
-	// function mousemove() {
-	// 	const x0 = ax.invert(d3.mouse(this)[0])
-	// 	const i = bisectDate(xaxis, x0, 1)
-	// 	const d0 = xaxis[i - 1]
-	// 	const d1 = xaxis[i]
-	// 	const d = x0 - d0 > d1 - x0 ? d1 : d0
-	// 	focus.attr("transform", `translate(${ax(d)}, ${(d, i) => ay(yaxis[i])})`)
-	// 	focus.select("text").text((d, i) => (yaxis[i]))
-	// 	focus.select(".x-hover-line").attr("y2",(d, i) => HEIGHT - ay(yaxis[i]))
-	// 	focus.select(".y-hover-line").attr("x2", (d, i) => -ax(yaxis[i]))
-  // }
+	svg.append("rect")
+		.attr("class", "overlay")
+		.attr("width", LWIDTH)
+		.attr("height", LHEIGHT)
+		.on("mouseover", () => focus.style("display", null))
+		.on("mouseout", () => focus.style("display", "none"))
+		.on("mousemove", mousemove)
+		.on('click', mouseClick)
+
+	function mouseClick() {
+		console.log("mouseClick")
+	}
+
+	function mousemove() {
+    console.log(d3.pointer(yaxis))
+		const x0 = ax.invert(d3.pointer(xaxis))
+		const i = bisectDate(data, x0, 1)
+		const d0 = data[i - 2]
+		const d1 = data[i - 1]
+		const d = x0 - d0.year > d1.year - x0 ? d1 : d0
+    console.log(d)
+		focus.attr("transform", `translate(${ax(d.date)}, ${ay(d.value)})`)
+		focus.select("text").text(d.value)
+		focus.select(".x-hover-line").attr("y2", LHEIGHT - ay(d.value))
+		focus.select(".y-hover-line").attr("x2", -ax(d.date))
+	}
 }

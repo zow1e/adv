@@ -5,7 +5,7 @@
 
 function createbarchart(xaxis, yaxis) {
 
-  console.log('barchart printing')
+  // console.log('barchart printing')
   
   const MARGIN = { LEFT: 80, RIGHT: 100, TOP: 50 , BOTTOM: 150 }
   const WIDTH = 700 - MARGIN.LEFT - MARGIN.RIGHT
@@ -63,7 +63,7 @@ function createbarchart(xaxis, yaxis) {
       
 function updatebar(xaxis, yaxis, ylabel) {
     
-  console.log('updating bar')
+  // console.log('updating bar')
   
   const t = d3.transition().duration(600)
 

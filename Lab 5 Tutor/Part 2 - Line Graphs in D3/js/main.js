@@ -101,17 +101,24 @@ d3.json("data/example.json").then(data => {
 		.attr("x", 15)
 		.attr("dy", ".31em")
 
-	g.append("rect")
+	svg.append("rect")
 		.attr("class", "overlay")
 		.attr("width", WIDTH)
 		.attr("height", HEIGHT)
 		.on("mouseover", () => focus.style("display", null))
 		.on("mouseout", () => focus.style("display", "none"))
 		.on("mousemove", mousemove)
+		.on('click', mouseClick)
+
+	function mouseClick() {
+		console.log("mouseClick");
+	}
 
 	function mousemove() {
-		const x0 = x.invert(d3.mouse(this)[0])
+		const x0 = x.invert(d3.pointer(this)[0])
 		const i = bisectDate(data, x0, 1)
+		console.log(i)
+		console.log(data[i])
 		const d0 = data[i - 1]
 		const d1 = data[i]
 		const d = x0 - d0.year > d1.year - x0 ? d1 : d0

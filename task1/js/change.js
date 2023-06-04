@@ -33,6 +33,7 @@ function checkval(value,timecol) {
 		return [rolled, label]
     }
   }
+
   
 
   // change value in filter
@@ -49,15 +50,21 @@ $("#var-select").on("change", () => {
     ylabel = valuecheck[1]
     updateline(xaxis, yaxis, ylabel)
 
-    valuecheck = checkval(value, 'town')
-    yaxis = valuecheck[0]
-    ylabel = valuecheck[1]
-    updatebar(townsall, yaxis, ylabel)
+    // valuecheck = checkval(value, 'town')
+    // yaxis = valuecheck[0]
+    // ylabel = valuecheck[1]
+    // updatebar(townsall, yaxis, ylabel)
 
-	valuecheck = checkval(value, 'flat_type')
+	  valuecheck = checkval(value, 'flat_model')
     yaxis = valuecheck[0]
     ylabel = valuecheck[1]
     updatetypearea(flatmodelall, yaxis, ylabel)
+
+    valuecheck = checkval(value, 'town')
+    yaxis = valuecheck[0]
+    ylabel = valuecheck[1]
+    if (ylabel != 'Count of Units') {
+    updatestacked('Count', yaxis, ylabel) }
   })
 
   // change time in filter
@@ -77,54 +84,75 @@ $("#var-time-select").on("change", () => {
     updateline(xaxis, yaxis, ylabel)
   })
 
+  $("#var-town-select").on("change", () => {
+    console.log('change town')
+    townchange = $("#var-town-select").val()
+    d = makeAgg(pdata)
+    update(d)
+  })
+
 
 
   // change indivs
 
-  $("#var-town-select").on("change", () => {
-    console.log('change time')
+  // $("#var-town-select").on("change", () => {
+  //   console.log('change time')
 
-    const value = $("#var-select").val()
-    const time = $("#var-time-select").val()
+  //   const value = $("#var-select").val()
+  //   const time = $("#var-time-select").val()
+  //   const town = $("#var-town-select").val()
     
-    xaxis = checktime(time)
+  //   xaxis = checktime(time)
 
-    valuecheck = checkval(value, xaxis, time)
-    yaxis = valuecheck[0]
-    ylabel = valuecheck[1]
+  //   valuecheck = checkval(value, xaxis, time)
+  //   yaxis = valuecheck[0]
+  //   ylabel = valuecheck[1]
 
-    // console.log('change time', yaxis)
-    updateline(xaxis, yaxis, ylabel)
-  })
+  //   // console.log('change time', yaxis)
+  //   updateline(xaxis, yaxis, ylabel)
 
-  $("#var-type-select").on("change", () => {
-    console.log('change time')
+  //   // valuecheck = checkval(value, 'flat_model')
+  //   // yaxis = valuecheck[0]
+  //   // ylabel = valuecheck[1]
+  //   // updatetypearea(flatmodelall, yaxis, ylabel)
 
-    const value = $("#var-select").val()
-    const time = $("#var-time-select").val()
+  //   // valuecheck = checkval(value, 'town')
+  //   // yaxis = valuecheck[0]
+  //   // ylabel = valuecheck[1]
+  //   // if (ylabel != 'Count of Units') {
+  //   // updatestacked('Count', yaxis, ylabel) }
+
+  //   wranglePieData(town)
+  // })
+
+  // $("#var-type-select").on("change", () => {
+  //   console.log('change time')
+
+  //   const value = $("#var-select").val()
+  //   const time = $("#var-time-select").val()
     
-    xaxis = checktime(time)
+  //   xaxis = checktime(time)
 
-    valuecheck = checkval(value, xaxis, time)
-    yaxis = valuecheck[0]
-    ylabel = valuecheck[1]
+  //   valuecheck = checkval(value, xaxis, time)
+  //   yaxis = valuecheck[0]
+  //   ylabel = valuecheck[1]
 
-    // console.log('change time', yaxis)
-    updateline(xaxis, yaxis, ylabel)
-  })
+  //   // console.log('change time', yaxis)
+  //   updateline(xaxis, yaxis, ylabel)
+  // })
 
-  $("#var-model-select").on("change", () => {
-    console.log('change time')
+  // $("#var-model-select").on("change", () => {
+  //   console.log('change time')
 
-    const value = $("#var-select").val()
-    const time = $("#var-time-select").val()
+  //   const value = $("#var-select").val()
+  //   const time = $("#var-time-select").val()
     
-    xaxis = checktime(time)
+  //   xaxis = checktime(time)
 
-    valuecheck = checkval(value, xaxis, time)
-    yaxis = valuecheck[0]
-    ylabel = valuecheck[1]
+  //   valuecheck = checkval(value, xaxis, time)
+  //   yaxis = valuecheck[0]
+  //   ylabel = valuecheck[1]
 
-    // console.log('change time', yaxis)
-    updateline(xaxis, yaxis, ylabel)
-  })
+  //   // console.log('change time', yaxis)
+  //   updateline(xaxis, yaxis, ylabel)
+  // })

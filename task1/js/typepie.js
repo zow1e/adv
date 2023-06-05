@@ -56,7 +56,7 @@ function wranglePieData(data) {
     townarray.push(i)
     piearr.push({
       'town': i,
-      'count': d.toFixed(2)
+      'count': d
     })
   })
 

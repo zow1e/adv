@@ -17,8 +17,8 @@ monthNames = [ "January", "February", "March", "April", "May", "June",
 // let barfile
 
 
-d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
-// d3.csv("data/small.csv").then(data => {
+// d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
+d3.csv("data/small.csv").then(data => { 
   pdata = data
 
   data.forEach(d => {
@@ -144,7 +144,7 @@ function reset(data){
   updatetypearea(flatmodelall, flattypeavg, 'Avg Resale Price ($)')
 
   // updatestacked(data, 'Count', townresaleavg, 'Avg Resale Price ($)', 'town')
-  updatestacked('Count', townresaleavg, 'Avg Resale Price ($)')
+  // updatestacked('Count', townresaleavg, 'Avg Resale Price ($)')
   // wrangleStacked(data, townresaleavg)
 
   wranglePieData(data)
@@ -165,6 +165,7 @@ function update(data) {
 
   // updatestacked(data, 'Count', townresaleavg, 'Avg Resale Price ($)', townchange)
   // updatestacked('Count', townresaleavg, 'Avg Resale Price ($)')
+  // wrangleStacked(data, townresaleavg)
 
   wranglePieData(data)
 }

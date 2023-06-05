@@ -117,6 +117,7 @@ function wrangleStacked(data, linedata) {
       
       
 function updatestacked(ylabel, linevar, linelabel) {
+  console.log(ss)
   // newdata = filterTown(ff, data)
   // wrangleStacked(data)
     
@@ -158,10 +159,19 @@ function updatestacked(ylabel, linevar, linelabel) {
   .append("g")
   .selectAll("rect")
   .data(stackedData)
-  // console.log(stackedData)
+  const mbars = rects
+  .selectAll("rect")
+  .data(d => d )
 
   //exit old bars
-  rects.selectAll("g").selectAll("rect").exit()
+  rects.exit()
+  .attr("class", "exit")
+  .transition(t)
+  .attr("height", 0)
+  .attr("y", HEIGHT)
+  .style("fill-opacity", "0.1")
+  .remove()
+  mbars.exit()
   .attr("class", "exit")
   .transition(t)
   .attr("height", 0)
@@ -173,8 +183,7 @@ function updatestacked(ylabel, linevar, linelabel) {
   rects
   .attr("class", "update")
     // enter a second time = loop subgroup per subgroup to add all rectangles
-    .selectAll("rect")
-    .data(d => d )
+    mbars
     .transition(t)
       .attr("x", d =>  kxScale(d.data.town))
       .attr("y", d =>  kyScale(d[1]))
@@ -203,6 +212,7 @@ function updatestacked(ylabel, linevar, linelabel) {
 
     
   // add line chart
+  console.log(linevar)
   lineyScale.domain([0,d3.max(linevar)])
 
   const lineAxisCall = d3.axisRight(lineyScale)
@@ -218,7 +228,8 @@ function updatestacked(ylabel, linevar, linelabel) {
     .x(d => kxScale(d) + kxScale.bandwidth() / 2)
     .y((d, i) => lineyScale(linevar[i]))
 
-  kg.selectAll("path.line").remove()
+  if (linevar.length > 1){
+    kg.selectAll("path.line").remove()
 
   kg.append("path")
     .attr("class", "line")
@@ -227,9 +238,8 @@ function updatestacked(ylabel, linevar, linelabel) {
     .attr("stroke-width", "3px")
     .transition(t)
     .attr("d", lline(xaxis))
+  }
 
-    // console.log('addline')
-  
   
   // add label
     kYlabel.text(ylabel)  

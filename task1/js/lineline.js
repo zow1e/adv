@@ -160,7 +160,7 @@ function updateline(xaxis, yaxis, ylabel) {
 
 
   //tooltip
-  const bisectDate = d3.bisector(xaxis, d => d).left
+  const bisectDate = d3.bisector(d => d.date).left
 
   const focus = g.append("g")
 		.attr("class", "focus")
@@ -183,10 +183,10 @@ function updateline(xaxis, yaxis, ylabel) {
 		.attr("x", 15)
 		.attr("dy", ".31em")
 
-	svg.append("rect")
+    g.append("rect")
 		.attr("class", "overlay")
-		.attr("width", LWIDTH)
-		.attr("height", LHEIGHT)
+		.attr("width", LWIDTH+50)
+		.attr("height", LHEIGHT+50)
 		.on("mouseover", () => focus.style("display", null))
 		.on("mouseout", () => focus.style("display", "none"))
 		.on("mousemove", mousemove)
@@ -196,14 +196,12 @@ function updateline(xaxis, yaxis, ylabel) {
 		console.log("mouseClick")
 	}
 
-	function mousemove() {
-    console.log(d3.pointer(yaxis))
-		const x0 = ax.invert(d3.pointer(xaxis))
+	function mousemove(event) {
+		const x0 = ax.invert(d3.pointer(event, this)[0])
 		const i = bisectDate(data, x0, 1)
-		const d0 = data[i - 2]
-		const d1 = data[i - 1]
-		const d = x0 - d0.year > d1.year - x0 ? d1 : d0
-    console.log(d)
+		const d0 = data[i - 1]
+		const d1 = data[i]
+		const d = x0 - d0.date > d1.date - x0 ? d1 : d0
 		focus.attr("transform", `translate(${ax(d.date)}, ${ay(d.value)})`)
 		focus.select("text").text(d.value)
 		focus.select(".x-hover-line").attr("y2", LHEIGHT - ay(d.value))

@@ -33,126 +33,37 @@ function checkval(value,timecol) {
 		return [rolled, label]
     }
   }
-
+//   let d
+//   townchange = $("#var-town-select").val()
+//   console.log(pdata)
+//   d = filterTown(townchange, pdata)
+  
   
 
-  // change value in filter
-$("#var-select").on("change", () => {
-    console.log('change value')
+//   // change value in filter
+// $("#var-select").on("change", () => {
+//     console.log('change value')
 
-    const value = $("#var-select").val()
-    const time = $("#var-time-select").val()
-    
-    xaxis = checktime(time)
+//     const value = $("#var-select").val()
 
-    valuecheck = checkval(value, time)
-    yaxis = valuecheck[0]
-    ylabel = valuecheck[1]
-    updateline(xaxis, yaxis, ylabel)
+//     if (value != 'units_sold') {
+//       stack.wrangleData() }
 
-    // valuecheck = checkval(value, 'town')
-    // yaxis = valuecheck[0]
-    // ylabel = valuecheck[1]
-    // updatebar(townsall, yaxis, ylabel)
+//     line.wrangleData(d)
+//     bar.wrangleData(d)
+//   })
 
-	  valuecheck = checkval(value, 'flat_model')
-    yaxis = valuecheck[0]
-    ylabel = valuecheck[1]
-    updatetypearea(flatmodelall, yaxis, ylabel)
+//   // change time in filter
+// $("#var-time-select").on("change", () => {
+//     console.log('change time')
 
-    valuecheck = checkval(value, 'town')
-    yaxis = valuecheck[0]
-    ylabel = valuecheck[1]
-    if (ylabel != 'Count of Units') {
-    updatestacked('Count', yaxis, ylabel) }
-  })
+//     line.wrangleData(d)
+//   })
 
-  // change time in filter
-$("#var-time-select").on("change", () => {
-    console.log('change time')
+// $("#var-town-select").on("change", () => {
+//   console.log('change town')
+//   townchange = $("#var-town-select").val()
 
-    const value = $("#var-select").val()
-    const time = $("#var-time-select").val()
-    
-    xaxis = checktime(time)
-
-    valuecheck = checkval(value, time)
-    yaxis = valuecheck[0]
-    ylabel = valuecheck[1]
-
-    // console.log('change time', yaxis)
-    updateline(xaxis, yaxis, ylabel)
-  })
-
-  $("#var-town-select").on("change", () => {
-    console.log('change town')
-    townchange = $("#var-town-select").val()
-    d = makeAgg(pdata)
-    update(d)
-  })
-
-
-
-  // change indivs
-
-  // $("#var-town-select").on("change", () => {
-  //   console.log('change time')
-
-  //   const value = $("#var-select").val()
-  //   const time = $("#var-time-select").val()
-  //   const town = $("#var-town-select").val()
-    
-  //   xaxis = checktime(time)
-
-  //   valuecheck = checkval(value, xaxis, time)
-  //   yaxis = valuecheck[0]
-  //   ylabel = valuecheck[1]
-
-  //   // console.log('change time', yaxis)
-  //   updateline(xaxis, yaxis, ylabel)
-
-  //   // valuecheck = checkval(value, 'flat_model')
-  //   // yaxis = valuecheck[0]
-  //   // ylabel = valuecheck[1]
-  //   // updatetypearea(flatmodelall, yaxis, ylabel)
-
-  //   // valuecheck = checkval(value, 'town')
-  //   // yaxis = valuecheck[0]
-  //   // ylabel = valuecheck[1]
-  //   // if (ylabel != 'Count of Units') {
-  //   // updatestacked('Count', yaxis, ylabel) }
-
-  //   wranglePieData(town)
-  // })
-
-  // $("#var-type-select").on("change", () => {
-  //   console.log('change time')
-
-  //   const value = $("#var-select").val()
-  //   const time = $("#var-time-select").val()
-    
-  //   xaxis = checktime(time)
-
-  //   valuecheck = checkval(value, xaxis, time)
-  //   yaxis = valuecheck[0]
-  //   ylabel = valuecheck[1]
-
-  //   // console.log('change time', yaxis)
-  //   updateline(xaxis, yaxis, ylabel)
-  // })
-
-  // $("#var-model-select").on("change", () => {
-  //   console.log('change time')
-
-  //   const value = $("#var-select").val()
-  //   const time = $("#var-time-select").val()
-    
-  //   xaxis = checktime(time)
-
-  //   valuecheck = checkval(value, xaxis, time)
-  //   yaxis = valuecheck[0]
-  //   ylabel = valuecheck[1]
-
-  //   // console.log('change time', yaxis)
-  //   updateline(xaxis, yaxis, ylabel)
-  // })
+//   newd = filterTown(townchange, d)
+//   update(newd)
+// })

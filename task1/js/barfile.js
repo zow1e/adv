@@ -3,157 +3,181 @@
 */
 
 
-function createbarchart(xaxis, yaxis) {
+class BarChart {
+  constructor(_parentElement, _firstdata) {
+    this.parentElement = _parentElement
+    this.firstdata = _firstdata
 
-  // console.log('barchart printing')
+    this.initVis()
+  }
+
+  initVis() {
+    const vis = this
   
-  const MARGIN = { LEFT: 80, RIGHT: 100, TOP: 50 , BOTTOM: 150 }
-  const WIDTH = 700 - MARGIN.LEFT - MARGIN.RIGHT
-  BHEIGHT = 420 - MARGIN.TOP - MARGIN.BOTTOM
+  vis.MARGIN = { LEFT: 80, RIGHT: 100, TOP: 50 , BOTTOM: 80 }
+  vis.WIDTH = 700 - vis.MARGIN.LEFT - vis.MARGIN.RIGHT
+  vis.HEIGHT = 400 - vis.MARGIN.TOP - vis.MARGIN.BOTTOM
       
-  const svg = d3.select('#bar-chart').append("svg")
-    .attr("width", WIDTH + MARGIN.LEFT + MARGIN.RIGHT)
-    .attr("height", BHEIGHT + MARGIN.TOP + MARGIN.BOTTOM)
-      
-  bg = svg.append("g")
-    .attr("transform", `translate(${MARGIN.LEFT}, ${MARGIN.TOP})`)
-      
-          // // line chart
-  x = d3.scaleBand()
-    .range([0, WIDTH])
-  //   .range([MARGIN.LEFT, WIDTH - MARGIN.RIGHT])
-    .padding(0.1);
+  vis.svg = d3.select(vis.parentElement).append("svg")
+      .attr("width", vis.WIDTH + vis.MARGIN.LEFT + vis.MARGIN.RIGHT)
+      .attr("height", vis.HEIGHT + vis.MARGIN.TOP + vis.MARGIN.BOTTOM)
 
-  y = d3.scaleLinear()
-    .range([BHEIGHT, 0])
+    vis.g = vis.svg.append("g")
+      .attr("transform", `translate(${vis.MARGIN.LEFT}, ${vis.MARGIN.TOP})`)
 
-            
-  bxAxisGroup = bg.append("g")
-    .attr("class", "x axis")
-    .attr("transform", `translate(0, ${BHEIGHT})`)
+    // vis.linePath = vis.g.append("path")
+    //   .attr("class", "line")
+    //   .attr("fill", "none")
+    //   .attr("stroke-width", "3px")
 
-  byAxisGroup = bg.append("g")
-    .attr("class", "y axis")
-      
+    vis.x = d3.scaleBand()
+      .range([0, vis.WIDTH])
+      .padding(0.3)
+
+    vis.y = d3.scaleLinear().range([vis.HEIGHT, 0])
+
+    vis.xAxisgroup = vis.g.append("g")
+      .attr("class", "x axis")
+      .attr("transform", `translate(0, ${vis.HEIGHT})`)
+
+    vis.yAxisgroup = vis.g.append("g")
+      .attr("class", "y axis")
+
+    vis.yLabel = vis.g.append("text")
+      .attr("class", "title")
+      .attr("y", -15)
+      .attr("x", -50)
+      .attr("font-size", "12px")
+      .attr("text-anchor", "start")
+
+    // line chart
+    vis.lineyAxisgroup = vis.g.append("g")
+      .attr("class", "yaxis2")
+      .attr("transform", `translate(${vis.WIDTH}, 0)`)
     
-  // X label
-  bg.append("text")
-    .attr("class", "x axis-label")
-    .attr("x", WIDTH / 2)
-    .attr("y", BHEIGHT + 60)
-    .attr("font-size", "20px")
-    .attr("text-anchor", "middle")
+    vis.lineyLabel = vis.g.append("text")
+      .attr("class", "title")
+      .attr("y", -15)
+      .attr("x", vis.WIDTH-50)
+      .attr("font-size", "12px")
+      .attr("text-anchor", "start")
+      .text('Avg Years Left on Lease')
 
-  // Y label
-  bYlabel = bg.append("text")
-    .attr("class", "y axis-label")
-    .attr("x", - (BHEIGHT / 2))
-    .attr("y", -60)
-    .attr("font-size", "20px")
-    .attr("text-anchor", "middle")
-    .attr("transform", "rotate(-90)")
-      
+    vis.liney = d3.scaleLinear()
+      .rangeRound([vis.HEIGHT, 0])
 
-  // const addLegend()
+    vis.wrangleData(vis.firstdata)
+  }
 
-  updatebar(xaxis, yaxis, 'Avg Resale Price ($)')
 
-}
-      
-      
-function updatebar(xaxis, yaxis, ylabel) {
+  wrangleData(_data) {
+    const vis = this
+    this.data = _data
+
+    const value = $("#var-select").val()
     
-  // console.log('updating bar')
-  
-  const t = d3.transition().duration(600)
-
-  x.domain(xaxis)
-  y.domain([0, d3.max(yaxis)])
-  
-  const xAxisCall = d3.axisBottom(x)  
-
-  bxAxisGroup
-  .transition(t).call(xAxisCall)  
-    .selectAll("text")
-      .attr("y", "10")
-      .attr("x", "-5")
-      .attr("text-anchor", "end")
-      .attr("transform", "rotate(-40)")
-
-  const yAxisCall = d3.axisLeft(y)
-    .ticks(5)
-    .tickFormat(d => "$"+d)
-    byAxisGroup
-    .transition(t)
-    .call(yAxisCall) 
-
-
-    // tooltip
-    var tooltip = bg
-      .append("div")
-      .style("position", "absolute")
-      .style("z-index", "10")
-      .style("visibility", "hidden")
-      .style("background", "#000")
-      .text("a simple tooltip");
-
-
-        // draw bars
-  const rects = bg.selectAll("rect")
-    .data(xaxis)
+    const xAxis = Array.from(new Set(vis.data.map((d) => d.flat_model)))
     
-    // delete gone bars
-    rects.exit()
-        .attr("class", "exit")
-        .transition(t)
+    const valuecheck = checkval(value, 'flat_model')
+    const yAxis = valuecheck[0]
+    vis.label = valuecheck[1]
+
+    vis.dataFiltered = createNest(xAxis, yAxis)
+    vis.yLabel.text(vis.label)
+
+    const datagroup = d3.group(vis.data, d => d.flat_model)
+    vis.flatall = Array.from(datagroup.keys())
+
+    //line chart
+    vis.lineval = calcs.avg('remainingyrs', 'flat_model')
+    vis.lineNest = createNest(xAxis, vis.lineval)
+    
+
+    vis.updateVis()
+  }
+
+  updateVis() {
+    const vis = this
+
+    vis.t = d3.transition().duration(1000)
+
+    // update scales
+    vis.x.domain(vis.flatall)
+    vis.y.domain([0, d3.max(vis.dataFiltered, d => d.value)])
+    vis.liney.domain([0, d3.max(vis.lineval)])
+    // update axes
+    vis.yAxisgroupCall = d3.axisLeft(vis.y)
+    .ticks(6)
+    .tickFormat(d => lableCheck(d, vis.label))
+    vis.yAxisgroup
+    .transition(vis.t)
+    .call(vis.yAxisgroupCall)
+    
+
+    vis.xAxisgroupCall = d3.axisBottom(vis.x)
+      .tickValues(vis.dataFiltered.map(d => d.key))
+      .tickFormat(d => d)
+    vis.xAxisgroup
+      .transition(vis.t)
+      .call(vis.xAxisgroupCall)  
+      .selectAll("text")
+        .attr("y", "10")
+        .attr("x", "-5")
+        .attr("text-anchor", "end")
+        .attr("transform", "rotate(-40)")
+
+    vis.lineyAxisgroupCall = d3.axisRight(vis.liney)
+      .ticks(6)
+      .tickFormat(d => d)
+    vis.lineyAxisgroup
+      .transition(vis.t)
+      .call(vis.lineyAxisgroupCall)
+
+    // add bars
+      vis.rects = vis.g.selectAll("rect")
+      .data(vis.dataFiltered, d => d.key)
+
+    vis.rects.exit()
+      .attr("class", "exit")
+      .transition(vis.t)
         .attr("height", 0)
-        .attr("y", BHEIGHT)
+        .attr("y", vis.HEIGHT)
         .style("fill-opacity", "0.1")
         .remove()
 
-        //update repeat bars
-    rects
-        .attr("class", "update")
-        .transition(t)
-        .attr("y", (d, i) => y(yaxis[i]))
-        .attr("height", (d, i) => BHEIGHT - y(yaxis[i]))
-        .attr("x", d => x(d))
-        .attr("width", x.bandwidth)
+    vis.rects
+      .attr("class", "update")
+      .transition(vis.t)
+        .attr("y", d => vis.y(d.value))
+        .attr("height", d => (vis.HEIGHT - vis.y(d.value)))
+        .attr("x", d => vis.x(d.key))
+        .attr("width", vis.x.bandwidth)
 
-        //add new bars
-    rects.enter().append("rect")
-        .attr("class", "enter")
-        .attr("y", y(0))
-        .attr("x", d => x(d))
-        .attr("width", x.bandwidth)
-        .attr("fill", "mediumseagreen") 
-        // .on("click", drill)
-        // .style("height", function(d) {
-            // return d + "px"})
-        .transition(t)
-        .attr("y", (d, i) => y(yaxis[i]))
-        .attr("height", (d, i) => BHEIGHT - y(yaxis[i]))
+    vis.rects.enter().append("rect")
+      .attr("class", "enter")
+      .attr("y", d => vis.y(d.value))
+      .attr("height", d => (vis.HEIGHT - vis.y(d.value)))
+      .attr("x", d => vis.x(d.key))
+      .attr("width", vis.x.bandwidth)
+      .attr("fill", "mediumseagreen")
+      .transition(vis.t)
 
-        // .addEventListener("mouseover", function (actual, i) {
+      // vis.barline = new subLine(vis.g, vis.data, vis.WIDTH, vis.HEIGHT, vis.x, 'town', vis.lineval, )
+      // draw line
+      vis.line = d3.line()
+        .x(d => vis.x(d.key) + vis.x.bandwidth() / 2)
+        .y(d=> vis.liney(d.value))
 
-        // .on('click', function (actual, i) {
-        //   d3.selectAll('.value')
-        //     .attr('opacity', 0)
   
-        //   d3.select(this)
-        //     .transition()
-        //     .duration(300)
-        //     .attr('opacity', 0.6)
-        //     .attr('x', (a) => x(a.language) - 5)
-        //     .attr('width', xScale.bandwidth() + 10) })
-
-      //   .on("mouseover", function(d){tooltip.text((d, i) => y(yaxis[i])); return tooltip.style("visibility", "visible");})
-      // .on("mousemove", function(){return tooltip.style("top", (d3.event.pageY-10)+"px").style("left",(d3.event.pageX+10)+"px");})
-      // .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
+    vis.g.selectAll("path.line").remove()
     
-    
-    bYlabel.text(ylabel)
-      
-
-      }
+    vis.g.append("path")
+          .attr("class", "line")
+          .attr("fill", "none")
+          .attr("stroke", "blue")
+          .attr("stroke-width", "3px")
+          .transition(vis.t)
+          .attr("d", vis.line(vis.lineNest))
+  }
+}
     

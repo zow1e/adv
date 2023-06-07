@@ -27,7 +27,6 @@ class StackedChart {
   
   
       vis.x = d3.scaleBand()
-        .domain(townsall)
         .range([0, vis.WIDTH])
         .padding(0.3)
   
@@ -173,32 +172,24 @@ wrangleData(_data) {
       .transition(vis.t)
       .call(vis.lineyAxisgroupCall)
 
-    // add bars
-    vis.rects = vis.g
-        .append('g')
-        .selectAll("rect")
-        .data(vis.stackedData)
-    vis.mbars = vis.rects
-    .selectAll('rects')
-    .data(d => d)
-
-    vis.rects.selectAll('rects')
-    .data(d => d).exit()
+      // remove bars
+    vis.g
+    .selectAll('.layer')
         .attr("class", "exit")
         .transition(vis.t)
         .attr("height", 0)
         .attr("y", vis.HEIGHT)
         .style("fill-opacity", "0.1")
         .remove()
-      // vis.mbars.exit()
-      //   .attr("class", "exit")
-      //   .transition(vis.t)
-      //   .attr("height", 0)
-      //   .attr("y", vis.HEIGHT)
-      //   .style("fill-opacity", "0.1")
-      //   .remove()
 
-    vis.rects
+    // add bars
+    const rects = vis.g
+        .append('g')
+        .attr('class', 'layer')
+        .selectAll("rect")
+        .data(vis.stackedData)
+
+    rects
         .attr("class", "update")
         .selectAll("rect")
         // enter a second time = loop subgroup per subgroup to add all rectangles
@@ -209,25 +200,27 @@ wrangleData(_data) {
         .attr("height", d =>  vis.y(d[0]) - vis.y(d[1]))
         .attr("width",vis.x.bandwidth)
 
-    vis.rects.enter().append("g")
+    rects.enter()
+    .append("g")
+    .attr('class', 'indiv')
     .attr("fill", d => vis.colorScale(d.key))
-    // vis.mbars
-    .selectAll("rect")
+    
+    .selectAll("rects")
     // enter a second time = loop subgroup per subgroup to add all rectangles
     .data(d => d )
     .enter().append("rect")
       .attr("y", vis.y(0))
       .attr("x", d => vis.x(d.data.town))
       .attr("width", vis.x.bandwidth)
-    // .transition(vis.t)
+    .transition(vis.t)
       .attr("y", d =>  vis.y(d[1]))
       .attr("height", d =>  vis.y(d[0]) - vis.y(d[1]))
       .attr("width",vis.x.bandwidth)
 
       // draw line
-      vis.line = d3.line()
-        .x(d => vis.x(d.key) + vis.x.bandwidth() / 2)
-        .y(d=> vis.liney(d.value))
+    vis.line = d3.line()
+      .x(d => vis.x(d.key) + vis.x.bandwidth() / 2)
+      .y(d=> vis.liney(d.value))
 
     // console.log(vis.lineNest)
     // console.log(vis.line(vis.lineNest))

@@ -8,20 +8,17 @@ const formatTime = d3.timeFormat("%m/%Y")
 const formatMonth = d3.timeFormat("%m")
 
 
-monthNames = [ "January", "February", "March", "April", "May", "June",
-"July", "August", "September", "October", "November", "December" ];
+let nestedCalls;
+let calcs;
 
-let nestedCalls
-let calcs
-
-let bar
-let line
-let stack
-let pie
+let bar;
+let line;
+let stack;
+let pie;
 
 
-d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
-// d3.csv("data/small.csv").then(data => { 
+// d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
+d3.csv("data/small.csv").then(data => { 
 
   data.forEach(d => {
     d.block = Number(d.block)
@@ -30,10 +27,9 @@ d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
     d.resale_price = Number(d.resale_price)
     
     d.date = formatTime(parseTime(d.month))
-    // d.date = parseTime(d.month)
-    // d.date = d.month
     d.year = parseTime(d.month).getFullYear()
-    d.month = formatMonth(parseTime(d.month))
+    // d.month = formatMonth(parseTime(d.month))
+    d.month = parseTime(d.month).getMonth()
 
     d.remainingyrs = (d.lease_commence_date + 99) - d.year
 
@@ -64,21 +60,19 @@ d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
     document.getElementById('var-time-select').value = 'year'
     document.getElementById('var-town-select').value = 'town'
 
-    // newdata = makeAgg(data)
-    // reset(data)
-    update(data)
+    // update(data)
   }, 10000)
 
-  calcs = {avg(value, time) {
-    rolled = d3.rollup(data, v => d3.mean(v, d => d[value]), d => d[time])
+  calcs = {avg(value, time, d) {
+    rolled = d3.rollup(d, v => d3.mean(v, d => d[value]), d => d[time])
     arrayofvals = Array.from(rolled.values())
     return arrayofvals
   },
-  count(val){
-    rolled = d3.rollup(data, v =>v.length, d => d[val])
-        arrayofvals = Array.from(rolled.values())
-        return arrayofvals
-  }
+    count(val, d){
+      rolled = d3.rollup(d, v =>v.length, d => d[val])
+          arrayofvals = Array.from(rolled.values())
+          return arrayofvals
+    }
   }
 
   bar = new BarChart("#type-area", data)
@@ -86,9 +80,10 @@ d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
   stack = new StackedChart("#stacked", data)
   pie = new PieChart("#pie-chart", data)
 
-  townchange = $("#var-town-select").val()
-  // console.log(data)
-  d = filterTown(townchange, data)
+
+  // townchange = $("#var-town-select").val()
+  // d = filterTown(townchange, data)
+  // console.log(d)
   
   // change value in filter
   $("#var-select").on("change", () => {
@@ -97,38 +92,36 @@ d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
     const value = $("#var-select").val()
 
     if (value != 'units_sold') {
-      stack.wrangleData(d) }
+      stack.wrangleData(data) }
 
-    line.wrangleData(d)
-    bar.wrangleData(d)
+    line.wrangleData(data)
+    bar.wrangleData(data)
   })
 
   // change time in filter
   $("#var-time-select").on("change", () => {
     console.log('change time')
 
-    line.wrangleData(d)
+    line.wrangleData(data)
   })
 
   $("#var-town-select").on("change", () => {
   console.log('change town')
   townchange = $("#var-town-select").val()
 
-  newd = filterTown(townchange, d)
+  newd = filterTown(townchange, data)
   update(newd)
   })
 
 })
 
 
-
-function filterTown(filter, gdata){
-  // console.log(gdata)
+function filterTown(filter, gdata) {
   if (filter == 'town') {
     return gdata
   }
   else {
-    data = []
+    const data = []
     gdata.forEach(d => {
       if (d.town == filter){
       data.push(d)}
@@ -137,20 +130,8 @@ function filterTown(filter, gdata){
   }
 }
 
-// function reset(data){
-
-//   console.log('reset all')
-
-//   bar.wrangleData(data)
-//   line.wrangleData(data)
-//   stack.wrangleData(data)
-//   pie.wrangleData(data)
-
-// }
-
 
 function update(data) {
-  // console.log('update all')
 
   townsgroup = d3.group(data, d => d.town)
   townsall = Array.from(townsgroup.keys())
@@ -172,11 +153,10 @@ function createNest(xaxis, yaxis){
       })
     })
     return data
-  }
+}
 
-// console.log('main done')
 
-function checktime(time) {
+function checktime(time, og) {
   if (time == 'year') {
     return yrsall
   }
@@ -184,26 +164,30 @@ function checktime(time) {
     return monthsall
   }
   else {
-      // console.log(datesall)
-    return datesall
+    const data = []
+    og.forEach(d => {
+      if (d.year == time){
+      data.push(d)}
+    })
+    return Array.from(new Set(data.map((d) => d.month)))
   }
 }
 
 // check value in value filter
-function checkval(value,timecol) {
+function checkval(value,timecol, d) {
   if (value == 'resale_price') {
-    resaleavg = calcs.avg(value, timecol)
+    resaleavg = calcs.avg(value, timecol, d)
     label = 'Avg Resale Price ($)'
     return [resaleavg, label]
     
   }
   else if (value == 'floor_area_sqm'){
-  valavg = calcs.avg(value, timecol)
+  valavg = calcs.avg(value, timecol, d)
   label = 'Avg Floor Area (Sqm)'
   return [valavg, label]
   }
   else if (value == 'units_sold'){
-  rolled = calcs.count(timecol)
+  rolled = calcs.count(timecol, d)
   label = 'Count of Units'
   return [rolled, label]
   }

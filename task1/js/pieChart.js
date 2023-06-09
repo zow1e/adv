@@ -106,7 +106,6 @@ class PieChart {
   addLegend() {
     const vis = this
 
-    // console.log(this.townarray)
         
     const legend = vis.g.append("g")
     .attr("class", "legend")
@@ -126,8 +125,7 @@ class PieChart {
       .attr('y', 10)
       .style("text-transform", "capitalize")
       .attr("font-size", "13px")
-      .text('value: ' + vis.pie(vis.piearr)[i].data.count)
-        
+      .text('value: ' + vis.pie(vis.piearr)[i].data.count)  
     })
   }
 }

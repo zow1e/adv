@@ -1,34 +1,34 @@
 
 
 //check value in time filter
-function checktime(time) {
-    if (time == 'year') {
-      return yrsall
-    }
-    else if (time == 'month'){
-      return monthsall
-    }
-    else {
-        // console.log(datesall)
-      return datesall
-    }
-  }
+// function checktime(time) {
+//     if (time == 'year') {
+//       return yrsall
+//     }
+//     else if (time == 'month'){
+//       return monthsall
+//     }
+//     else {
+//         // console.log(datesall)
+//       return datesall
+//     }
+//   }
 
   // check value in value filter
-function checkval(value,timecol) {
+function checkval(value,timecol, d) {
     if (value == 'resale_price') {
-      resaleavg = calcs.avg(value, timecol)
+      resaleavg = calcs.avg(value, timecol, d)
       label = 'Avg Resale Price ($)'
       return [resaleavg, label]
       
     }
     else if (value == 'floor_area_sqm'){
-		valavg = calcs.avg(value, timecol)
+		valavg = calcs.avg(value, timecol, d)
 		label = 'Avg Floor Area (Sqm)'
 		return [valavg, label]
     }
     else if (value == 'units_sold'){
-		rolled = calcs.count(timecol)
+		rolled = calcs.count(timecol, d)
 		label = 'Count of Units'
 		return [rolled, label]
     }

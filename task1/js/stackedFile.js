@@ -4,54 +4,54 @@
 
 
 class StackedChart {
-    constructor(_parentElement, _firstdata) {
-      this.parentElement = _parentElement
-      this.firstdata = _firstdata
-  
-      this.initVis()
-    }
-  
-    initVis() {
-      const vis = this
-    
-    vis.MARGIN = { LEFT: 80, RIGHT: 250, TOP: 30 , BOTTOM: 150 }
-    vis.WIDTH = 800 - vis.MARGIN.LEFT - vis.MARGIN.RIGHT
-    vis.HEIGHT = 400 - vis.MARGIN.TOP - vis.MARGIN.BOTTOM
-        
-    vis.svg = d3.select(vis.parentElement).append("svg")
-        .attr("width", vis.WIDTH + vis.MARGIN.LEFT + vis.MARGIN.RIGHT)
-        .attr("height", vis.HEIGHT + vis.MARGIN.TOP + vis.MARGIN.BOTTOM)
-  
-      vis.g = vis.svg.append("g")
-        .attr("transform", `translate(${vis.MARGIN.LEFT}, ${vis.MARGIN.TOP})`)
-  
-  
-      vis.x = d3.scaleBand()
-        .range([0, vis.WIDTH])
-        .padding(0.3)
-  
-      vis.y = d3.scaleLinear().range([vis.HEIGHT, 0])
+  constructor(_parentElement, _firstdata) {
+    this.parentElement = _parentElement
+    this.firstdata = _firstdata
 
-    //   vis.yline = d3.scaleLinear().range([vis.HEIGHT, 0])
+    this.initVis()
+  }
 
-      vis.colorScale = d3.scaleOrdinal()
-      .range(d3.schemeCategory10)
-
+  initVis() {
+    const vis = this
   
-      vis.xAxisgroup = vis.g.append("g")
-        .attr("class", "x axis")
-        .attr("transform", `translate(0, ${vis.HEIGHT})`)
-  
-      vis.yAxisgroup = vis.g.append("g")
-        .attr("class", "y axis")
+  vis.MARGIN = { LEFT: 80, RIGHT: 250, TOP: 30 , BOTTOM: 150 }
+  vis.WIDTH = 800 - vis.MARGIN.LEFT - vis.MARGIN.RIGHT
+  vis.HEIGHT = 400 - vis.MARGIN.TOP - vis.MARGIN.BOTTOM
+      
+  vis.svg = d3.select(vis.parentElement).append("svg")
+      .attr("width", vis.WIDTH + vis.MARGIN.LEFT + vis.MARGIN.RIGHT)
+      .attr("height", vis.HEIGHT + vis.MARGIN.TOP + vis.MARGIN.BOTTOM)
 
-      vis.yLabel = vis.g.append("text")
-        .attr("class", "title")
-        .attr("y", -15)
-        .attr("x", -50)
-        .attr("font-size", "12px")
-        .attr("text-anchor", "start")
-        .text('Count of Units')
+    vis.g = vis.svg.append("g")
+      .attr("transform", `translate(${vis.MARGIN.LEFT}, ${vis.MARGIN.TOP})`)
+
+
+    vis.x = d3.scaleBand()
+      .range([0, vis.WIDTH])
+      .padding(0.3)
+
+    vis.y = d3.scaleLinear().range([vis.HEIGHT, 0])
+
+  //   vis.yline = d3.scaleLinear().range([vis.HEIGHT, 0])
+
+    vis.colorScale = d3.scaleOrdinal()
+    .range(d3.schemeCategory10)
+
+
+    vis.xAxisgroup = vis.g.append("g")
+      .attr("class", "x axis")
+      .attr("transform", `translate(0, ${vis.HEIGHT})`)
+
+    vis.yAxisgroup = vis.g.append("g")
+      .attr("class", "y axis")
+
+    vis.yLabel = vis.g.append("text")
+      .attr("class", "title")
+      .attr("y", -15)
+      .attr("x", -50)
+      .attr("font-size", "12px")
+      .attr("text-anchor", "start")
+      .text('Count of Units')
 
         // line chart
     vis.lineyAxisgroup = vis.g.append("g")
@@ -71,16 +71,16 @@ class StackedChart {
       vis.wrangleData(vis.firstdata)
       vis.addLegend()
       
-    }
+  }
   
   
-wrangleData(_data) {
+  wrangleData(_data) {
     const vis = this
     this.data = _data
 
     const value = $("#var-select").val()
 
-    vis.valuecheck = checkval(value, 'town')
+    vis.valuecheck = checkval(value, 'town', vis.data)
     vis.lineval = vis.valuecheck[0]
     vis.label = vis.valuecheck[1]
 
@@ -99,32 +99,32 @@ wrangleData(_data) {
     vis.x.domain(vis.data.map(d => d.town))
 
     function matrixData() {
-        const rollups = d3
-          .rollups(
-            vis.data.filter(d => d.flat_type),
-            v => {
-              const o = {};
-              flatall.forEach(p => (o[p] = 0));
-              v.forEach(d => (o[d.flat_type] = v.length));
-              return o;
-            },
-            d => d.town
-          )
-          .map(d => ({ town: d[0], ...d[1] }))
+      const rollups = d3
+        .rollups(
+          vis.data.filter(d => d.flat_type),
+          v => {
+            const o = {};
+            flatall.forEach(p => (o[p] = 0));
+            v.forEach(d => (o[d.flat_type] = v.length));
+            return o;
+          },
+          d => d.town
+        )
+        .map(d => ({ town: d[0], ...d[1] }))
+  
+      const last = rollups[rollups.length - 1]
+  
+      return Object.assign(rollups, {
+        columns: [...Object.keys(last)].sort((a, b) =>
+          d3.descending(last[a], last[b])
+        )
+      })
+    }
     
-        const last = rollups[rollups.length - 1]
-    
-        return Object.assign(rollups, {
-          columns: [...Object.keys(last)].sort((a, b) =>
-            d3.descending(last[a], last[b])
-          )
-        })
-      }
-    
-      vis.dataFiltered = matrixData()
+    vis.dataFiltered = matrixData()
 
     vis.updateVis()
-    }
+  }
 
   updateVis() {
     const vis = this
@@ -135,13 +135,13 @@ wrangleData(_data) {
     vis.stackedData = vis.stacked(vis.dataFiltered)
     // console.log(vis.stackedData)
 
-    vis.ymax = d3.max(vis.stackedData, d => {
+    const ymax = d3.max(vis.stackedData, d => {
         return d3.max(d, d => {
             return d[1]
         }) })
 
     // update scales
-    vis.y.domain([0, vis.ymax])
+    vis.y.domain([0, ymax])
     vis.liney.domain([0, d3.max(vis.lineval)])
 
     // update axes
@@ -222,8 +222,6 @@ wrangleData(_data) {
       .x(d => vis.x(d.key) + vis.x.bandwidth() / 2)
       .y(d=> vis.liney(d.value))
 
-    // console.log(vis.lineNest)
-    // console.log(vis.line(vis.lineNest))
   
     vis.g.selectAll("path.line").remove()
     
@@ -235,31 +233,30 @@ wrangleData(_data) {
         .transition(vis.t)
         .attr("d", vis.line(vis.lineNest))
 
-    }
+  }
 
   addLegend() {
     const vis = this
         
     const legend = vis.g.append("g")
     .attr("class", "legend")
-    .attr("transform", `translate(${vis.WIDTH+100}, ${vis.HEIGHT-200})`)
+    .attr("transform", `translate(${vis.WIDTH+65}, ${vis.HEIGHT-200})`)
   
     vis.keystype.forEach((model, i) => {
-        const legendrow = legend.append('g')
-                .attr("transform", `translate(0, ${i * 20})`)
-  
-        legendrow.append('rect')
-        .attr('width', 10)
-        .attr('height', 10)
-        .attr('fill', vis.colorScale(model))
-  
-        legendrow.append('text')
-        .attr('x', 20)
-        .attr('y', 10)
-        .style("text-transform", "capitalize")
-        .attr("font-size", "13px")
-        .text(model)
-        
+      const legendrow = legend.append('g')
+              .attr("transform", `translate(0, ${i * 20})`)
+
+      legendrow.append('rect')
+      .attr('width', 10)
+      .attr('height', 10)
+      .attr('fill', vis.colorScale(model))
+
+      legendrow.append('text')
+      .attr('x', 20)
+      .attr('y', 10)
+      .style("text-transform", "capitalize")
+      .attr("font-size", "13px")
+      .text(model)
     })
   }
 }

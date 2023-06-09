@@ -14,7 +14,7 @@ class BarChart {
   initVis() {
     const vis = this
   
-  vis.MARGIN = { LEFT: 80, RIGHT: 100, TOP: 50 , BOTTOM: 80 }
+  vis.MARGIN = { LEFT: 100, RIGHT: 100, TOP: 50 , BOTTOM: 80 }
   vis.WIDTH = 700 - vis.MARGIN.LEFT - vis.MARGIN.RIGHT
   vis.HEIGHT = 400 - vis.MARGIN.TOP - vis.MARGIN.BOTTOM
       
@@ -78,7 +78,7 @@ class BarChart {
     
     const xAxis = Array.from(new Set(vis.data.map((d) => d.flat_model)))
     
-    const valuecheck = checkval(value, 'flat_model')
+    const valuecheck = checkval(value, 'flat_model', vis.data)
     const yAxis = valuecheck[0]
     vis.label = valuecheck[1]
 
@@ -89,7 +89,7 @@ class BarChart {
     vis.flatall = Array.from(datagroup.keys())
 
     //line chart
-    vis.lineval = calcs.avg('remainingyrs', 'flat_model')
+    vis.lineval = calcs.avg('remainingyrs', 'flat_model', vis.data)
     vis.lineNest = createNest(xAxis, vis.lineval)
     
 
@@ -162,7 +162,6 @@ class BarChart {
       .attr("fill", "mediumseagreen")
       .transition(vis.t)
 
-      // vis.barline = new subLine(vis.g, vis.data, vis.WIDTH, vis.HEIGHT, vis.x, 'town', vis.lineval, )
       // draw line
       vis.line = d3.line()
         .x(d => vis.x(d.key) + vis.x.bandwidth() / 2)

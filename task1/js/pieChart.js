@@ -15,7 +15,7 @@ class PieChart {
       const vis = this
     
     vis.MARGIN = { LEFT: 280, RIGHT: 150, TOP: 170 , BOTTOM: 100 }
-    vis.WIDTH = 700 - vis.MARGIN.LEFT - vis.MARGIN.RIGHT
+    vis.WIDTH = 690 - vis.MARGIN.LEFT - vis.MARGIN.RIGHT
     vis.HEIGHT = 420 - vis.MARGIN.TOP - vis.MARGIN.BOTTOM
     vis.RADIUS = (Math.min(vis.WIDTH, vis.HEIGHT) / 2) + 25
         
@@ -81,14 +81,18 @@ class PieChart {
       vis.path =  vis.g.selectAll("path")
       .data(vis.pie(vis.piearr))
 
+      vis.path.exit()
+      .attr("class", "exit")
+      .transition(vis.t)
+        .style("fill-opacity", "0.1")
+        .remove()
+
       vis.path.transition(vis.t)
       .attrTween('d', arcTween)
     
       vis.path.enter().append("path")
       .attr('fill', d => vis.colorScale(d.data.town))
-      .attr("stroke", "black")
-      .style("stroke-width", "1.5px")
-      //  .style("opacity", 0.7)
+      .attr('class', d => d.data.town)
       .transition(vis.t)
       .attr('d', vis.arc)
         .attrTween("d", arcTween)
@@ -99,13 +103,13 @@ class PieChart {
         return (t) =>  vis.arc(i(t))
       }
 
-        vis.g.selectAll('g.legend').remove()
         vis.addLegend()
     }
 
   addLegend() {
     const vis = this
 
+    vis.g.selectAll('g.legend').remove()
         
     const legend = vis.g.append("g")
     .attr("class", "legend")

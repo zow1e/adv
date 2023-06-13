@@ -17,8 +17,13 @@ let stack;
 let pie;
 
 
-// d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
-d3.csv("data/small.csv").then(data => { 
+d3.csv("data/hdb-resale-prices_2000-2023May.csv").then(data => {
+  const extentdate = d3.extent(data, d=> d.month)
+
+  span1 = document.getElementById('dateLabel1')
+  span1.textContent = extentdate[0]
+  span2 = document.getElementById('dateLabel2')
+  span2.textContent = extentdate[1]
 
   data.forEach(d => {
     d.block = Number(d.block)
@@ -39,14 +44,7 @@ d3.csv("data/small.csv").then(data => {
   // })
 
   // set value of items
-  datesgroup = d3.group(data, d => d.date)
-  datesall = Array.from(datesgroup.keys())
 
-  span1 = document.getElementById('dateLabel1')
-  span1.textContent = d3.min(datesall)
-  span2 = document.getElementById('dateLabel2')
-  span2.textContent = d3.max(datesall)
-  
   townsgroup = d3.group(data, d => d.town)
   townsall = Array.from(townsgroup.keys())
   var select = document.getElementById('var-town-select')
@@ -60,7 +58,7 @@ d3.csv("data/small.csv").then(data => {
     document.getElementById('var-time-select').value = 'year'
     document.getElementById('var-town-select').value = 'town'
 
-    // update(data)
+    update(data)
   }, 10000)
 
   calcs = {avg(value, time, d) {

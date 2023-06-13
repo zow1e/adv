@@ -17,7 +17,7 @@ class LineChart {
     const vis = this
   
     vis.MARGIN = { LEFT: 60, RIGHT: 100, TOP: 50 , BOTTOM: 70 }
-    vis.WIDTH = 700 - vis.MARGIN.LEFT - vis.MARGIN.RIGHT
+    vis.WIDTH = 690 - vis.MARGIN.LEFT - vis.MARGIN.RIGHT
     vis.HEIGHT = 400 - vis.MARGIN.TOP - vis.MARGIN.BOTTOM
         
     vis.svg = d3.select(vis.parentElement).append("svg")
@@ -243,6 +243,7 @@ class LineChart {
     }
   
     function mousemove(event) {
+      console.log(vis.dataFiltered)
       const x0 = vis.x.invert(d3.pointer(event, this)[0])
       const i = bisectDate(vis.dataFiltered, x0, 1)
       const d0 = vis.dataFiltered[i - 1]

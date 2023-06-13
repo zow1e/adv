@@ -15,7 +15,7 @@ class StackedChart {
     const vis = this
   
   vis.MARGIN = { LEFT: 80, RIGHT: 250, TOP: 30 , BOTTOM: 150 }
-  vis.WIDTH = 800 - vis.MARGIN.LEFT - vis.MARGIN.RIGHT
+  vis.WIDTH = 790 - vis.MARGIN.LEFT - vis.MARGIN.RIGHT
   vis.HEIGHT = 400 - vis.MARGIN.TOP - vis.MARGIN.BOTTOM
       
   vis.svg = d3.select(vis.parentElement).append("svg")
@@ -69,7 +69,6 @@ class StackedChart {
       .rangeRound([vis.HEIGHT, 0])
   
       vis.wrangleData(vis.firstdata)
-      vis.addLegend()
       
   }
   
@@ -233,10 +232,14 @@ class StackedChart {
         .transition(vis.t)
         .attr("d", vis.line(vis.lineNest))
 
+    vis.addLegend()
+
   }
 
   addLegend() {
     const vis = this
+
+    vis.g.selectAll('.legend').remove()
         
     const legend = vis.g.append("g")
     .attr("class", "legend")

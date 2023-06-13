@@ -14,8 +14,8 @@ class BarChart {
   initVis() {
     const vis = this
   
-  vis.MARGIN = { LEFT: 100, RIGHT: 100, TOP: 50 , BOTTOM: 80 }
-  vis.WIDTH = 700 - vis.MARGIN.LEFT - vis.MARGIN.RIGHT
+  vis.MARGIN = { LEFT: 100, RIGHT: 100, TOP: 50 , BOTTOM: 85 }
+  vis.WIDTH = 690 - vis.MARGIN.LEFT - vis.MARGIN.RIGHT
   vis.HEIGHT = 400 - vis.MARGIN.TOP - vis.MARGIN.BOTTOM
       
   vis.svg = d3.select(vis.parentElement).append("svg")
